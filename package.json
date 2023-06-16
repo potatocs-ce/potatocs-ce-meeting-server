@@ -1,0 +1,31 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "set NODE_ENV=development && nodemon server.js",
+    "prod": "set NODE_ENV=production && nodemon server.js",
+    "linux-test": "export NODE_ENV=development && nodemon server.js",
+    "linux-prod": "export NODE_ENV=production && nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1048.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "kurento-client": "^6.16.0",
+    "mongoose": "^6.0.13",
+    "multer": "^1.4.3",
+    "multer-s3": "^2.10.0",
+    "nodemon": "^2.0.15",
+    "socket.io": "^4.4.0",
+    "ws": "^8.2.3"
+  }
+}

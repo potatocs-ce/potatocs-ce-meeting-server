@@ -1,0 +1,9 @@
+/env
+private.pem
+public.pem
+node_modules/
+public/uploads/DocFile_1638437619115.pdf
+public/uploads/DocFile_1639357148549.pdf
+public/uploads/DocFile_1639358022111.pdf
+config/S3config.json
+/client
