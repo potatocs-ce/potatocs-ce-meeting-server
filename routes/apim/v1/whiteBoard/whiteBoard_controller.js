@@ -66,8 +66,6 @@ exports.meetingInfo = async (req, res) => {
                 await docData.save();
             }
 
-        } else {
-            res.status(500).send('internal server error');
         }
 
         res.send(meetingInfo)
@@ -143,9 +141,9 @@ exports.document = async (req, res) => {
         console.log(key)
         res.attachment(key);
         var file = s3.getObject({
-          Bucket: bucket,
-          Key: key
-          }).createReadStream()
+            Bucket: bucket,
+            Key: key
+        }).createReadStream()
             .on("error", error => {
             });
         file.pipe(res);
@@ -231,31 +229,31 @@ exports.deleteMeetingPdfFile = async (req, res) => {
         }
 
 
-        result = await dbModels.Doc.findOne({ _id: req.query._id },{_id: false , saveKey:true, meetingId:true});
+        result = await dbModels.Doc.findOne({ _id: req.query._id }, { _id: false, saveKey: true, meetingId: true });
 
         if (!result) {
             return res.status(400).send('invalid meeting id2');
         }
         // console.log(req.files[0])
         const params = {
-			Bucket: bucket,
-			Key:  result.saveKey
-		};
-		s3.deleteObject(params,function(err, data){
-			if(err) console.log(err, err.stack);
-			else console.log('s3 delete Success');
-		})
-		await dbModels.Doc.findOneAndDelete(
-			{
-				_id: req.query._id
-			}
-		)
+            Bucket: bucket,
+            Key: result.saveKey
+        };
+        s3.deleteObject(params, function (err, data) {
+            if (err) console.log(err, err.stack);
+            else console.log('s3 delete Success');
+        })
+        await dbModels.Doc.findOneAndDelete(
+            {
+                _id: req.query._id
+            }
+        )
 
         return res.status(200).send({
-			message: 'upload file delete',
+            message: 'upload file delete',
             meetingId: result.meetingId,
-		});
-		
+        });
+
 
     } catch (err) {
         console.log(err);
@@ -285,25 +283,25 @@ exports.deleteDrawingEvent = async (req, res) => {
 
 
         result = await dbModels.Doc.findOneAndUpdate(
-            { 
+            {
                 _id: req.query._id,
                 // 'drawingEventSet.pageNum' : req.query.currentPage
             },
             {
-                $pull : {
+                $pull: {
                     drawingEventSet: {
                         pageNum: req.query.currentPage
                     }
                 }
             }
         );
-       
+
         console.log(result);
-        
+
         return res.status(200).send({
-			message: 'drawing Event delete',
+            message: 'drawing Event delete',
             meetingId: result.meetingId,
-		});
+        });
 
     } catch (err) {
         console.log(err);
