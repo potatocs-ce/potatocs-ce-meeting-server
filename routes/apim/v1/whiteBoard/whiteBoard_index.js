@@ -39,17 +39,17 @@ const upload = multer({
     // }
 
     storage: multerS3({
-		s3, // == s3: s3
-		bucket,
-		acl: 'public-read',
-		contentType: multerS3.AUTO_CONTENT_TYPE,
-		key: (req, file, cb) => {
-			if (req.files && req.files.length > 0) {
-				cb(null, `pdf/${Date.now()}.${file.originalname}`);
-			} else {
-				// 사진은 없고 텍스트만 있을 때는 어떻게 넘어가야하는지?? todo!!
-			}
-		}
+        s3, // == s3: s3
+        bucket,
+        acl: 'public-read',
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+        key: (req, file, cb) => {
+            if (req.files && req.files.length > 0) {
+                cb(null, `pdf/${Date.now()}.${file.originalname}`);
+            } else {
+                // 사진은 없고 텍스트만 있을 때는 어떻게 넘어가야하는지?? todo!!
+            }
+        }
     })
 });
 
