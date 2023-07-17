@@ -310,13 +310,14 @@ exports.deleteDrawingEvent = async (req, res) => {
 
 }
 
+
 exports.updateDrawingEvent = async (req, res) => {
 
   console.log(`
 --------------------------------------------------
-User : ${req.params.meetingId}
-API  : update my DrawingEvent
-router.post(/updateDrawingEvent/, meetingContollder.updateDrawingEvent);
+  User : ${req.params.meetingId}
+  API  : update my DrawingEvent
+  router.post(/updateDrawingEvent/, meetingContollder.updateDrawingEvent);
 --------------------------------------------------`);
   const dbModels = global.DB_MODELS;
 
