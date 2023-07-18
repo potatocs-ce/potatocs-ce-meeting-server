@@ -15,7 +15,8 @@ let drawingSchema = new Schema({
   }]
 }, {
   timestamps: true,
-  collection: 'drawings'
+  collection: 'drawings',
+  toosl: string
 })
 
 module.exports = mongoose.model('Drawing', drawingSchema)
