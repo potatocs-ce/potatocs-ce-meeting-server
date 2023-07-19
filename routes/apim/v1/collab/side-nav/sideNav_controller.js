@@ -2,10 +2,10 @@ const { ObjectId } = require('bson');
 
 
 /* 
-	Create a folder
+  Create a folder
 */
 exports.createFolder = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
 	User : ${req.decoded._id}
 	API  : Create a folder
@@ -14,39 +14,39 @@ exports.createFolder = async (req, res) => {
 	folder_name : ${req.body.folder_name}
 --------------------------------------------------`);
 
-	const dbModels = global.DB_MODELS;
+  const dbModels = global.DB_MODELS;
 
-	try {
+  try {
 
-		const criteria = {
-			member_id: req.decoded._id,
-			displayName: req.body.folder_name
-		}
-		
-		const newFolder = dbModels.Folder(criteria);
+    const criteria = {
+      member_id: req.decoded._id,
+      displayName: req.body.folder_name
+    }
 
-		await newFolder.save();
+    const newFolder = dbModels.Folder(criteria);
 
-		return res.status(200).send({
-			message: 'created'
-		})
+    await newFolder.save();
 
-	} catch (err) {
+    return res.status(200).send({
+      message: 'created'
+    })
 
-		return res.status(500).send({
-			message: 'An error has occurred'
-		});
+  } catch (err) {
 
-	}
+    return res.status(500).send({
+      message: 'An error has occurred'
+    });
+
+  }
 
 }
 
 
 /*
-	Create a spce
+  Create a spce
 */
 exports.createSpace = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
 	User : ${req.decoded._id}
 	API  : Create a folder
@@ -56,75 +56,81 @@ exports.createSpace = async (req, res) => {
 	spaceBrief : ${req.body.spaceBrief}
 --------------------------------------------------`);
 
-	const dbModels = global.DB_MODELS;
-	let timeDigit = new Date().getTime().toString();
-	timeDigit = timeDigit.slice(9, 13);
+  const dbModels = global.DB_MODELS;
+  let timeDigit = new Date().getTime().toString();
+  timeDigit = timeDigit.slice(9, 13);
 
-	try {
+  try {
 
-		const criteria = {
-			displayName: req.body.spaceName,
-			displayBrief: req.body.spaceBrief,
-			spaceTime: new Date().getMilliseconds().toString() + timeDigit,
-			members: [
-				req.decoded._id
-			],
-			admins: [
-				req.decoded._id
-			]
-		}
+    const criteria = {
+      displayName: req.body.spaceName,
+      displayBrief: req.body.spaceBrief,
+      spaceTime: new Date().getMilliseconds().toString() + timeDigit,
+      members: [
+        req.decoded._id
+      ],
+      admins: [
+        req.decoded._id
+      ]
+    }
 
-		const Space = dbModels.Space(criteria);
+    savedData = {
+      ...body,
+      contracts,
+      employees,
+    }
 
-		await Space.save();
+    const Space = dbModels.Space(criteria);
 
-		return res.status(200).send({
-			message: 'created'
-		})
+    await Space.save();
 
-	} catch (err) {
+    return res.status(200).send({
+      message: 'created'
+    })
 
-		return res.status(500).send({
-			message: 'creatintg a space had an error'
-		});
+  } catch (err) {
 
-	}
+    return res.status(500).send({
+      message: 'creatintg a space had an error'
+    });
+
+  }
 
 }
 
 exports.updateSpace = async (req, res) => {
 
-	console.log(`
+  console.log(`
 --------------------------------------------------
   User : ${req.decoded._id}
   API  : Get my Space
   router.get(/load-update-menu', sideNavContollder.updateSpace);
 --------------------------------------------------`);
-	const dbModels = global.DB_MODELS;
+  const dbModels = global.DB_MODELS;
 
-	try {
-		console.log(dbModels.Space)
-		const spaceNav = await dbModels.Space.aggregate([
-			{
-				$match: {
-					members: ObjectId(req.decoded._id)
-				}
-			}
-		]);
-		console.log(spaceNav)
-		return res.status(200).send({
-			message: 'updated',
-			spaceNav,
-		
-		})
-		
+  try {
+    console.log(dbModels.Space)
+    const spaceNav = await dbModels.Space.aggregate([
+      {
+        $match: {
+          members: ObjectId(req.decoded._id)
+        }
+      }
+    ]);
+    console.log(spaceNav)
+    return res.status(200).send({
+      message: 'updated',
+      spaceNav,
 
-	} catch (err) {
+    })
 
-		console.log('[ ERROR ]', err);
-		res.status(500).send({
-			message: 'loadUpateMenu Error'
-		})
-	}
+
+  } catch (err) {
+
+    console.log('[ ERROR ]', err);
+    res.status(500).send({
+      message: 'loadUpateMenu Error'
+    })
+  }
 
 }
