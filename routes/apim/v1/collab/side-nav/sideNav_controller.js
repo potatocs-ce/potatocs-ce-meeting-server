@@ -74,12 +74,6 @@ exports.createSpace = async (req, res) => {
       ]
     }
 
-    savedData = {
-      ...body,
-      contracts,
-      employees,
-    }
-
     const Space = dbModels.Space(criteria);
 
     await Space.save();
