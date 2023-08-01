@@ -65,13 +65,6 @@ router.get("/document/:_id", whiteBoardController.document);
 /* 파일 업로드 */
 router.post("/upload/:meetingId", upload.any(), whiteBoardController.upload);
 
-/* 파일 다운 */
-router.post(
-  "/upload/:meetingId",
-  download.any(),
-  whiteBoardController.download
-);
-
 /* 파일 삭제 */
 router.delete(
   "/deleteMeetingPdfFile",
