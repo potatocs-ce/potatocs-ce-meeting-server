@@ -7,9 +7,6 @@ const folderSchema = mongoose.Schema(
       ref: 'Member',
       required: true
     },
-    Participants: [
-
-    ],
 
     displayName: {
       type: String
