@@ -1,4 +1,4 @@
-const { ObjectId } = require("bson");
+
 const mongoose = require("mongoose");
 const s3 = global.AWS_S3.s3;
 const bucket = global.AWS_S3.bucket;
@@ -135,7 +135,7 @@ exports.document = async (req, res) => {
         Key: key,
       })
       .createReadStream()
-      .on("error", (error) => {});
+      .on("error", (error) => { });
     file.pipe(res);
   });
 
