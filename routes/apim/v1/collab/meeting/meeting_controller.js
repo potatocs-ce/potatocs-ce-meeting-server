@@ -26,8 +26,6 @@ exports.getMeetingData = async (req, res) => {
     // console.log('[[ getMeetingData ]]', meetingData)
     console.log('-------------------------------------------')
 
-    meetingData.filter((data) => data.id === body.id)
-
     return res.send({
       success: true,
       meetingData,
@@ -108,7 +106,7 @@ exports.createChat = async (req, res) => {
 
     const Meeting = dbModels.MeetingChat(criteria);
     // console.log("[[ createChat ]] >>>>", Meeting)
-    await Meeting.save();
+    const savedMeeting = await new Meeting.save(Meeting);
 
     return res.status(200).send(
       Meeting
