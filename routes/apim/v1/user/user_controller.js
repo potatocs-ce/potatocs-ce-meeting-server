@@ -15,6 +15,15 @@ exports.profile = async (req, res) => {
   };
 
   try {
+    const meetingResult = await dbModels.Meeting.findOne(criteria);
+
+    const docResult = await dbModels.Doc.find(criteria).select({
+      saveKey: 0,
+      meetingId: 0,
+    });
+    res.send({ meetingResult: meetingResult, docResult: docResult });
+
+
     const user = await member.findOne(criteria, projection);
     // console.log(user);
     if (!user) {
