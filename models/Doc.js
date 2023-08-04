@@ -7,9 +7,6 @@ let docSchema = new Schema(
     meetingId: {
       type: String,
     },
-    phoneNumber: {
-      type: String,
-    },
     originalFileName: {
       type: String,
     },
