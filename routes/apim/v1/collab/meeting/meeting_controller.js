@@ -106,7 +106,7 @@ exports.createChat = async (req, res) => {
 
     const Meeting = dbModels.MeetingChat(criteria);
     // console.log("[[ createChat ]] >>>>", Meeting)
-    const savedMeeting = await new Meeting.save(Meeting);
+    await Meeting.save();
 
     return res.status(200).send(
       Meeting
