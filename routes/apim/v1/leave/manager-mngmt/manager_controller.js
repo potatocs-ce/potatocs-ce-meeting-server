@@ -162,37 +162,3 @@ exports.cancelPending = async (req, res) => {
   }
 
 };
-
-/*
-  manager_schema 안에 데이터가 있을 때
-  accepted => false = 펜딩중 true = 수락 후 매니저/직원 관계
-*/
-exports.updateManger = async (req, res) => {
-  console.log(`
---------------------------------------------------
-	User : ${req.decoded._id}
-	API  : updateMangerager Pending
-	router.delete('/updateMangerg', managerMngmtCtrl.updateManger);
-
-	manager_id : ${req.params.id}
---------------------------------------------------`);
-
-  try {
-
-    const criteria = {
-      _id: req.params.id
-    }
-
-    await manager.findByIdAndUpdate(criteria, { ...body });
-
-    return res.status(200).send({
-      message: 'canceled'
-    });
-
-  } catch (err) {
-    return res.status(500).send({
-      message: 'DB Error'
-    });
-  }
-
-};
