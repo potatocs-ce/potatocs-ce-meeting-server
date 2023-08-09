@@ -309,3 +309,51 @@ exports.deleteDrawingEvent = async (req, res) => {
   }
 
 }
+
+exports.findDrawingEvents = async (req, res) => {
+
+  console.log(`
+--------------------------------------------------
+  User : ${req.params.meetingId}
+  API  : Delete my DrawingEvent
+  router.post(/deleteDrawingEvent/, meetingContollder.deleteDrawingEvent);
+--------------------------------------------------`);
+  const dbModels = global.DB_MODELS;
+
+  console.log(req.query)
+  try {
+
+    if (!req.query._id) {
+      return res.status(400).send('invalid meeting id');
+    }
+
+    // result = await dbModels.Doc.findOneAndUpdate({ _id: req.query._id },{});
+
+
+    result = await dbModels.Doc.find(
+      {
+        _id: req.query._id,
+        // 'drawingEventSet.pageNum' : req.query.currentPage
+      },
+      {
+        $pull: {
+          drawingEventSet: {
+            pageNum: req.query.currentPage
+          }
+        }
+      }
+    );
+
+    console.log(result);
+
+    return res.status(200).send({
+      message: 'drawing Event delete',
+      meetingId: result.meetingId,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('internal server error');
+  }
+
+}
