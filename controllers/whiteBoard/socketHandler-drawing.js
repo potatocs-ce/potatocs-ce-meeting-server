@@ -90,12 +90,4 @@ module.exports = function (wsServer, socket, app) {
     console.log('back to FileList sync: ');
     socket.broadcast.to(data.meetingId).emit('sync:backToFileList');
   });
-
-  /*-------------------------------------------
-   doc. Participants () 하는 경우 sync
----------------------------------------------*/
-  socket.on('sync:Participants', (data) => {
-    console.log('back to Participants sync: ');
-    socket.broadcast.to(data.meetingId).emit('sync:Participants');
-  });
 }
