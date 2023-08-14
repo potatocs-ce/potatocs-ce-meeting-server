@@ -80,10 +80,6 @@ exports.cancelRequest = async (req, res) => {
 			message: 'canceled'
 		});
 
-		const updatedData = await dbModels.Manager.findOneAndUpdate(updateCriteria, updateData);
-		if (!updatedData) {
-			return res.status(404).send('the update has failed');
-		}
 
 	} catch (err) {
 		return res.status(500).send({
