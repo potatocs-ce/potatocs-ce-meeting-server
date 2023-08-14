@@ -16,7 +16,7 @@ module.exports = class Session {
   // 잘못되면 이거  data.sender === this.name로 바꿔라
   addIceCandidate(data, candidate) {
     // self
-    if (data.sender === this.name) {
+    if (data.sender === this.userId) {
       // have outgoing media.
       if (this.outgoingMedia) {
         // console.log(' add candidate to self : ' + data.sender);
