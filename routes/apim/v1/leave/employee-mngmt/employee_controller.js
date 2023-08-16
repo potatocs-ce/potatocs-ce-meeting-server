@@ -75,7 +75,10 @@ exports.cancelRequest = async (req, res) => {
 		}
 
 		await manager.deleteOne(criteria);
-
+		const updatedUser = await dbModels.Member.findOneAndUpdate(criteria, updateManagerData);
+		if (!updatedUser) {
+			return res.status(404).send('the user update has failed');
+		}
 		return res.status(200).send({
 			message: 'canceled'
 		});
