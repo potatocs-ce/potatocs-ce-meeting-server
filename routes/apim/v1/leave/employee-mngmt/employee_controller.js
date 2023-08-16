@@ -117,8 +117,6 @@ exports.acceptRequest = async (req, res) => {
 		}
 
 
-		console.log(updatedData);
-
 		const criteria = {
 			_id: req.decoded._id
 		}
@@ -195,8 +193,6 @@ exports.myEmployeeList = async (req, res) => {
 				}
 			}
 		]);
-
-		console.log(myEmployeeList);
 
 		return res.status(200).send({
 			message: 'found',
