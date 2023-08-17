@@ -80,7 +80,6 @@ exports.cancelRequest = async (req, res) => {
 			message: 'canceled'
 		});
 
-
 	} catch (err) {
 		return res.status(500).send({
 			message: 'DB Error'
@@ -116,6 +115,8 @@ exports.acceptRequest = async (req, res) => {
 			return res.status(404).send('the update has failed');
 		}
 
+
+		console.log(updatedData);
 
 		const criteria = {
 			_id: req.decoded._id
@@ -193,6 +194,8 @@ exports.myEmployeeList = async (req, res) => {
 				}
 			}
 		]);
+
+		console.log(myEmployeeList);
 
 		return res.status(200).send({
 			message: 'found',
