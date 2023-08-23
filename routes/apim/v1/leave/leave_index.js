@@ -35,7 +35,5 @@ router.get('/my-status', leaveMngmtCtrl.getMyLeaveStatus);
 
 // Approval Management
 router.get('/pending-leave-request', approvalMngmtCtrl.getLeaveRequest);
-router.fetch('/approve-leave-request', approvalMngmtCtrl.approvedLeaveRequest);
-
-
+router.put('/approve-leave-request', approvalMngmtCtrl.approvedLeaveRequest);
 module.exports = router;
