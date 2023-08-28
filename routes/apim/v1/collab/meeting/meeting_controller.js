@@ -61,10 +61,6 @@ exports.getUserData = async (req, res) => {
     console.log("-------------------------------------------");
 
     if (!userData) {
-
-      const meetingData = await dbModels.Meeting.findOne(criteria).populate(
-        "enlistedMembers"
-      );
       // console.log('No Matched Account');
       return res.status(404).send({
         message: "not found",
