@@ -1,7 +1,7 @@
 const { ObjectId } = require("bson");
 
 /* 
-	Get Meeting Data
+  Get Meeting Data
 */
 exports.getMeetingData = async (req, res) => {
   console.log(`
@@ -37,7 +37,7 @@ exports.getMeetingData = async (req, res) => {
 };
 
 /* 
-	Get User Data
+  Get User Data
 */
 exports.getUserData = async (req, res) => {
   console.log(`
@@ -61,6 +61,10 @@ exports.getUserData = async (req, res) => {
     console.log("-------------------------------------------");
 
     if (!userData) {
+
+      const meetingData = await dbModels.Meeting.findOne(criteria).populate(
+        "enlistedMembers"
+      );
       // console.log('No Matched Account');
       return res.status(404).send({
         message: "not found",
@@ -77,7 +81,7 @@ exports.getUserData = async (req, res) => {
 };
 
 /*
-	Create a chat
+  Create a chat
 */
 exports.createChat = async (req, res) => {
   console.log(`
@@ -110,7 +114,7 @@ exports.createChat = async (req, res) => {
 };
 
 /*
-	Get a chat
+  Get a chat
 */
 exports.getChat = async (req, res) => {
   console.log(`
@@ -145,7 +149,7 @@ exports.getChat = async (req, res) => {
 };
 
 /*
-	Delete a chat
+  Delete a chat
 */
 exports.deleteChat = async (req, res) => {
   console.log(`
@@ -188,7 +192,7 @@ exports.deleteChat = async (req, res) => {
 };
 
 /*
-	Delete All of chat
+  Delete All of chat
 */
 exports.deleteAllOfChat = async (req, res) => {
   console.log(`
@@ -231,7 +235,7 @@ exports.deleteAllOfChat = async (req, res) => {
 };
 
 /*
-	Get a role
+  Get a role
 */
 exports.getParticipantState = async (req, res) => {
   console.log(`
@@ -267,7 +271,7 @@ exports.getParticipantState = async (req, res) => {
 };
 
 /*
-	Get a onLine
+  Get a onLine
 */
 exports.getOnlineTrue = async (req, res) => {
   console.log(`
@@ -278,11 +282,11 @@ exports.getOnlineTrue = async (req, res) => {
   // console.log('[[getOnlineTrue]] >>>>>> ', req.query)
 
   /**
-	 * req.query = {
-	 * 	 meetingId: '61dfc310f3aedb66a1786e8e',
-  		 userId: '61d3f9c13b83fffca344bf58'
-	 * }
-	 */
+   * req.query = {
+   * 	 meetingId: '61dfc310f3aedb66a1786e8e',
+       userId: '61d3f9c13b83fffca344bf58'
+   * }
+   */
   const dbModels = global.DB_MODELS;
 
   try {
@@ -316,7 +320,7 @@ exports.getOnlineTrue = async (req, res) => {
 };
 
 /*
-	Get a onLine
+  Get a onLine
 */
 exports.getOnlineFalse = async (req, res) => {
   console.log(`
@@ -360,7 +364,7 @@ exports.getOnlineFalse = async (req, res) => {
 };
 
 /*
-	Update a Role
+  Update a Role
 */
 exports.getRoleUpdate = async (req, res) => {
   console.log(`
@@ -404,7 +408,7 @@ exports.getRoleUpdate = async (req, res) => {
 };
 
 /*
-	Update a meeting status
+  Update a meeting status
 */
 exports.getMeetingStatus = async (req, res) => {
   console.log(`
