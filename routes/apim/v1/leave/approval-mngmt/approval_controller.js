@@ -69,7 +69,7 @@ exports.approvedLeaveRequest = async (req, res) => {
   query: ${JSON.stringify(req.body)} pending leave request document id
 --------------------------------------------------`);
 	const dbModels = global.DB_MODELS;
-	let updateRequestorLeave = undefined;
+	let updateRequestorLeave;
 	try {
 
 		const criteria = {
