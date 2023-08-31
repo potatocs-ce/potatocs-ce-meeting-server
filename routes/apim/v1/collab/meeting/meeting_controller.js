@@ -430,20 +430,7 @@ exports.getMeetingStatus = async (req, res) => {
     if (!getMeetingStatus) {
       return res.status(400).send("invalid getMeetingStatus");
     }
-    const getRoleUpdate = await dbModels.Meeting.findOneAndUpdate(
-      {
-        _id: req.query.meetingId, // meetingId
-        "currentMembers.member_id": req.query.userId, // userId
-      },
-      {
-        $set: {
-          "currentMembers.$.role": req.query.role,
-        },
-      },
-      {
-        new: true,
-      }
-    );
+
     const getStatus = {
       _id: getMeetingStatus._id,
       status: getMeetingStatus.status,
