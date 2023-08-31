@@ -73,7 +73,7 @@ exports.getMyLeaveStatus = async (req, res) => {
 			{
 				$unwind: {
 					path: '$usedLeaveInfo',
-					preserveNullAndEmptyArrays: false
+					preserveNullAndEmptyArrays: true
 				}
 			},
 		]);
