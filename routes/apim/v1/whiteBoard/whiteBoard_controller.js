@@ -98,11 +98,7 @@ exports.documentInfo = async (req, res) => {
       saveKey: 0,
       meetingId: 0,
     });
-    res.send({
-      meetingResult: meetingResult,
-      docResult: docResult,
-      meetingStatus: meetingStatus,
-    });
+    res.send({ meetingResult: meetingResult, docResult: docResult });
 
     console.log("criteria", criteria);
     console.log("docResult", docResult);
