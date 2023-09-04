@@ -68,11 +68,6 @@ exports.findManager = async (req, res) => {
   manager_email_id : ${req.params.id}
 --------------------------------------------------`);
 
-  const projection = {
-    password: false,
-    createdAt: false,
-    updatedAt: false,
-  };
   try {
     const criteria = {
       email: req.params.id,
