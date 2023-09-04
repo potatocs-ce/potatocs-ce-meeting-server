@@ -65,45 +65,45 @@ module.exports = function (wsServer, socket, app) {
   })
   //////////////////////////////////////////////////////////
 
-  socket.on("leaveRoom", (data) => {
-    socket.leave(data.roomname);
-    leaveRoom(socket, data, err => {
-      if (err) {
-        console.error('leave Room error ' + err);
-      }
-    });
+  // socket.on("leaveRoom", (data) => {
+  //     socket.leave(data.roomname);
+  //     leaveRoom(socket, data, err => {
+  //         if (err) {
+  //             console.error('leave Room error ' + err);
+  //         }
+  //     });
 
-  });
-
-
-  socket.on("disconnecting", () => {
-    let userSession = userRegister.getById(socket.id);
-    if (userSession != undefined) {
-      if (userSession.roomName != undefined) {
-        meeting_disconnect = "disconnect during a meeting";
-        roomname = userSession.roomName;
-        username = socket.username;
-      }
-    }
-  });
+  // });
 
 
-  socket.on("disconnect", async () => {
-    if (meeting_disconnect != null) {
-      var data = {
-        username: username,
-        roomname: roomname,
-      }
+  // socket.on("disconnecting", () => {
+  //     let userSession = userRegister.getById(socket.id);
+  //     if (userSession != undefined) {
+  //         if (userSession.roomName != undefined) {
+  //             meeting_disconnect = "disconnect during a meeting";
+  //             roomname = userSession.roomName;
+  //             username = socket.username;
+  //         }
+  //     }
+  // });
 
-      leaveRoom(socket, data, err => {
-        if (err) {
-          console.error('leave Room error ' + err);
-        }
-      });
 
-      meeting_disconnect = null;
-    }
-  });
+  // socket.on("disconnect", async() => {
+  //     if (meeting_disconnect != null) {
+  //         var data = {
+  //             username: username,
+  //             roomname: roomname,
+  //         }
+
+  //         leaveRoom(socket, data, err => {
+  //             if (err) {
+  //                 console.error('leave Room error ' + err);
+  //             }
+  //         });
+
+  //         meeting_disconnect = null;
+  //     }
+  // });
 
 
 

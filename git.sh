@@ -5,7 +5,7 @@
 BRANCH_NAME="jeongwoon"
 
 # 직접 변수를 설정할 수 있도록 변경
-input_date="2023-09-01"  # 날짜를 직접 설정
+input_date="2023-09-04"  # 날짜를 직접 설정
 commit_message="[Debug] leave Room socket events"  # 커밋 메시지를 직접 설정
 
 # 날짜가 유효한지 확인 (Mac OS 호환성을 위해 수정)
