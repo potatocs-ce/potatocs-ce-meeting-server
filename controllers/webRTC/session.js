@@ -58,10 +58,6 @@ module.exports = class Session {
     }
   }
 
-  getIceCandidate() {
-
-    return this.iceCandidateQueue;
-  }
 
   setOutgoingMedia(outgoingMedia) {
     this.outgoingMedia = outgoingMedia;
