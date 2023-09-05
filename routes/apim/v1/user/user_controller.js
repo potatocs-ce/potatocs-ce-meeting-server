@@ -17,9 +17,6 @@ exports.profile = async (req, res) => {
   try {
     const user = await member.findOne(criteria, projection);
     // console.log(user);
-
-
-    user.map(x => { return { ...x, _id: req.decoded._id } })
     if (!user) {
       return res.status(401).send({
         message: 'An error has occured'

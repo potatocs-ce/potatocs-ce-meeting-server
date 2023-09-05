@@ -346,6 +346,8 @@ exports.findDrawingEvents = async (req, res) => {
 
     console.log(result);
 
+    result.filter((x) => x === req.query._id)
+
     return res.status(200).send({
       message: 'drawing Event delete',
       meetingId: result.meetingId,
