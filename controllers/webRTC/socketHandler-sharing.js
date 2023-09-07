@@ -462,12 +462,10 @@ function getRoom(roomName, callback) {
   if (room == null) {
     console.log('create new room : ' + roomName);
     try {
-      console.log('111111111111')
       getKurentoClient((error, kurentoClient) => {
         if (error) {
           return callback(error);
         }
-        console.log('222222222')
         kurentoClient.create('MediaPipeline', (error, pipeline) => {
           if (error) {
             return callback(error);
@@ -482,245 +480,271 @@ function getRoom(roomName, callback) {
           rooms[roomName] = room;
           callback(null, room);
         });
+        kurentoClient.update('MediaPipeline', (error, pipeline) => {
+          if (error) {
+            return callback(error);
+          }
+          room = {
+            name: roomName,
+            pipeline: pipeline,
+            participants: {},
+            kurentoClient: kurentoClient
+          };
+
+          kurentoClient.set('MediaPipeline', (error, pipeline) => {
+            if (error) {
+              return callback(error);
+            }
+            room = {
+              name: roomName,
+              pipeline: pipeline,
+              participants: {},
+              kurentoClient: kurentoClient
+            };
+            rooms[roomName] = room;
+            callback(null, room);
+          });
+
+
+        });
+      } catch (error) {
+        console.log(error)
+      }
+
+
+    } else {
+      console.log('get existing room : ' + roomName);
+      callback(null, room);
+    }
+  }
+
+  function join(socket, room, callback) {
+    let userName = socket.username;
+    let userId = socket.userid;
+
+    let userSession = new Session(socket, userName, room.name, userId);
+    userRegister.register(userSession);
+
+
+    room.pipeline.create('WebRtcEndpoint', (error, outgoingMedia) => {
+      if (error) {
+        console.error('no participant in room');
+        if (Object.keys(room.participants).length === 0) {
+          room.pipeline.release();
+        }
+        return callback(error);
+      }
+      userSession.setBandWidth(bandwidth);
+
+      outgoingMedia.setMaxVideoRecvBandwidth(bandwidth);
+      outgoingMedia.setMinVideoRecvBandwidth(bandwidth);
+      userSession.setOutgoingMedia(outgoingMedia);
+
+      let iceCandidateQueue = userSession.iceCandidateQueue[userSession.userId];
+
+      if (iceCandidateQueue) {
+        while (iceCandidateQueue.length) {
+          let message = iceCandidateQueue.shift();
+          console.error('user: ' + userSession.id + ' collect candidate for outgoing media');
+          userSession.outgoingMedia.addIceCandidate(message.candidate);
+        }
+      }
+
+      userSession.outgoingMedia.on('OnIceCandidate', event => {
+
+        let candidate = kurento.register.complexTypes.IceCandidate(event.candidate);
+        userSession.sendMessage({
+          id: 'iceCandidate',
+          // name: userSession.name,
+          userId: userSession.userId,
+          candidate: candidate
+        });
       });
+      let usersInRoom = room.participants;
+      for (let i in usersInRoom) {
+
+        // if (usersInRoom[i].name != userSession.name) {
+        // 문제 시 name로 바꿔라
+        if (usersInRoom[i].userId != userSession.userId) {
+          usersInRoom[i].sendMessage({
+            id: 'newParticipantArrived',
+            name: userSession.name,
+            userId: userSession.userId,
+          });
+        }
+      }
+
+      let existingUsers = [];
+      console.log('usersInRoom--------')
+      console.log(usersInRoom)
+      console.log('--------------------')
+      for (let i in usersInRoom) {
+        // if (usersInRoom[i].name != userSession.name) {
+        // 문제 시 name로 바꿔라
+        if (usersInRoom[i].userId != userSession.userId) {
+          existingUsers.push({
+            userId: usersInRoom[i].userId,
+            name: usersInRoom[i].name
+          });
+        }
+      }
+      console.log('existingUsers-----------------------------')
+      console.log(existingUsers)
+      userSession.sendMessage({
+        id: 'existingParticipants',
+        data: existingUsers,
+        roomName: room.name,
+        userId: userId
+      });
+      // 문제 시 userSession.name로 바꿔라
+      room.participants[userSession.userId] = userSession;
+
+      callback(null, userSession);
+    });
+  }
+
+  function receiveVideoFrom(socket, senderUserId, sdpOffer, callback) {
+
+    let userSession = userRegister.getById(socket.id);
+    // let sender = userRegister.getByUserId(senderUserId);
+
+    let sender = userRegister.getByRoomAndId(senderUserId, socket.roomName)
+
+
+    getEndpointForUser(userSession, sender, (error, endpoint) => {
+      try {
+        // if (error) {
+        //     console.error(error);
+        //     callback(error);
+        // }
+
+        endpoint.processOffer(sdpOffer, (error, sdpAnswer) => {
+          console.log(`process offer from ${sender.userId} to ${userSession.userId}`);
+          if (error) {
+            return callback(error);
+          }
+          let data = {
+            id: 'receiveVideoAnswer',
+            userId: sender.userId,
+            sdpAnswer: sdpAnswer
+          };
+          userSession.sendMessage(data);
+
+          endpoint.gatherCandidates(error => {
+            if (error) {
+              return callback(error);
+            }
+          });
+
+          return callback(null, sdpAnswer);
+        });
+      } catch (error) {
+        console.error(error);
+        callback(error);
+      }
+
+    });
+  }
+
+
+  function getKurentoClient(callback) {
+    kurento(wsUrl, (error, kurentoClient) => {
+      if (error) {
+        let message = 'Could not find media server at address ${wsUrl}';
+        return callback(message + 'Exiting with error ' + error);
+      }
+      callback(null, kurentoClient);
+    });
+  }
+
+  function addIceCandidate(socket, message, callback) {
+    let user = userRegister.getById(socket.id);
+    if (user != null) {
+      // assign type to IceCandidate
+      let candidate = kurento.register.complexTypes.IceCandidate(message.candidate);
+      user.addIceCandidate(message, candidate);
+      callback();
+    } else {
+      console.error(`ice candidate with no user receive : ${message.sender}`);
+      callback(new Error("addIceCandidate failed"));
+    }
+  }
+  function getEndpointForUser(userSession, sender, callback) {
+
+    try {
+      if (userSession.userId === sender.userId) {
+        return callback(null, userSession.outgoingMedia);
+      }
+
+      let incoming = userSession.incomingMedia[sender.userId];
+      console.log(userSession.userId + "    " + sender.userId);
+      if (incoming == null) {
+        console.log(`user : ${userSession.id} create endpoint to receive video from : ${sender.id}`);
+        getRoom(userSession.roomName, (error, room) => {
+          if (error) {
+            console.error(error);
+            callback(error);
+            return;
+          }
+          room.pipeline.create('WebRtcEndpoint', (error, incoming) => {
+            if (error) {
+              if (Object.keys(room.participants).length === 0) {
+                room.pipeline.release();
+              }
+              console.error('error: ' + error);
+              callback(error);
+              return;
+            }
+
+            console.log(`user: ${userSession.userId} successfully create pipeline`);
+            incoming.setMaxVideoRecvBandwidth(bandwidth);
+            incoming.setMinVideoRecvBandwidth(bandwidth);
+            userSession.incomingMedia[sender.userId] = incoming;
+
+
+            // add ice candidate the get sent before endpoints is establlished
+            let iceCandidateQueue = userSession.iceCandidateQueue[sender.userId];
+            if (iceCandidateQueue) {
+              while (iceCandidateQueue.length) {
+                let message = iceCandidateQueue.shift();
+                console.log(`user: ${userSession.userId} collect candidate for ${message.data.sender}`);
+                incoming.addIceCandidate(message.candidate);
+              }
+            }
+
+            incoming.on('OnIceCandidate', event => {
+
+              let candidate = kurento.register.complexTypes.IceCandidate(event.candidate);
+              userSession.sendMessage({
+                id: 'iceCandidate',
+                userId: sender.userId,
+                candidate: candidate
+              });
+            });
+
+            sender.outgoingMedia.connect(incoming, error => {
+              if (error) {
+                console.log(error);
+                callback(error);
+                return;
+              }
+              callback(null, incoming);
+            });
+          });
+        })
+      } else {
+        console.log(`user: ${userSession.name} get existing endpoint to receive video from: ${sender.name}`);
+        sender.outgoingMedia.connect(incoming, error => {
+          if (error) {
+            callback(error);
+          }
+          callback(null, incoming);
+        });
+      }
     } catch (error) {
       console.log(error)
     }
 
-
-  } else {
-    console.log('get existing room : ' + roomName);
-    callback(null, room);
   }
-}
-
-function join(socket, room, callback) {
-  let userName = socket.username;
-  let userId = socket.userid;
-
-  let userSession = new Session(socket, userName, room.name, userId);
-  userRegister.register(userSession);
-
-
-  room.pipeline.create('WebRtcEndpoint', (error, outgoingMedia) => {
-    if (error) {
-      console.error('no participant in room');
-      if (Object.keys(room.participants).length === 0) {
-        room.pipeline.release();
-      }
-      return callback(error);
-    }
-    userSession.setBandWidth(bandwidth);
-
-    outgoingMedia.setMaxVideoRecvBandwidth(bandwidth);
-    outgoingMedia.setMinVideoRecvBandwidth(bandwidth);
-    userSession.setOutgoingMedia(outgoingMedia);
-
-    let iceCandidateQueue = userSession.iceCandidateQueue[userSession.userId];
-
-    if (iceCandidateQueue) {
-      while (iceCandidateQueue.length) {
-        let message = iceCandidateQueue.shift();
-        console.error('user: ' + userSession.id + ' collect candidate for outgoing media');
-        userSession.outgoingMedia.addIceCandidate(message.candidate);
-      }
-    }
-
-    userSession.outgoingMedia.on('OnIceCandidate', event => {
-
-      let candidate = kurento.register.complexTypes.IceCandidate(event.candidate);
-      userSession.sendMessage({
-        id: 'iceCandidate',
-        // name: userSession.name,
-        userId: userSession.userId,
-        candidate: candidate
-      });
-    });
-    let usersInRoom = room.participants;
-    for (let i in usersInRoom) {
-
-      // if (usersInRoom[i].name != userSession.name) {
-      // 문제 시 name로 바꿔라
-      if (usersInRoom[i].userId != userSession.userId) {
-        usersInRoom[i].sendMessage({
-          id: 'newParticipantArrived',
-          name: userSession.name,
-          userId: userSession.userId,
-        });
-      }
-    }
-
-    let existingUsers = [];
-    console.log('usersInRoom--------')
-    console.log(usersInRoom)
-    console.log('--------------------')
-    for (let i in usersInRoom) {
-      // if (usersInRoom[i].name != userSession.name) {
-      // 문제 시 name로 바꿔라
-      if (usersInRoom[i].userId != userSession.userId) {
-        existingUsers.push({
-          userId: usersInRoom[i].userId,
-          name: usersInRoom[i].name
-        });
-      }
-    }
-    console.log('existingUsers-----------------------------')
-    console.log(existingUsers)
-    userSession.sendMessage({
-      id: 'existingParticipants',
-      data: existingUsers,
-      roomName: room.name,
-      userId: userId
-    });
-    // 문제 시 userSession.name로 바꿔라
-    room.participants[userSession.userId] = userSession;
-
-    callback(null, userSession);
-  });
-}
-
-function receiveVideoFrom(socket, senderUserId, sdpOffer, callback) {
-
-  let userSession = userRegister.getById(socket.id);
-  // let sender = userRegister.getByUserId(senderUserId);
-
-  let sender = userRegister.getByRoomAndId(senderUserId, socket.roomName)
-
-
-  getEndpointForUser(userSession, sender, (error, endpoint) => {
-    try {
-      // if (error) {
-      //     console.error(error);
-      //     callback(error);
-      // }
-
-      endpoint.processOffer(sdpOffer, (error, sdpAnswer) => {
-        console.log(`process offer from ${sender.userId} to ${userSession.userId}`);
-        if (error) {
-          return callback(error);
-        }
-        let data = {
-          id: 'receiveVideoAnswer',
-          userId: sender.userId,
-          sdpAnswer: sdpAnswer
-        };
-        userSession.sendMessage(data);
-
-        endpoint.gatherCandidates(error => {
-          if (error) {
-            return callback(error);
-          }
-        });
-
-        return callback(null, sdpAnswer);
-      });
-    } catch (error) {
-      console.error(error);
-      callback(error);
-    }
-
-  });
-}
-
-
-function getKurentoClient(callback) {
-  kurento(wsUrl, (error, kurentoClient) => {
-    if (error) {
-      let message = 'Could not find media server at address ${wsUrl}';
-      return callback(message + 'Exiting with error ' + error);
-    }
-    callback(null, kurentoClient);
-  });
-}
-
-function addIceCandidate(socket, message, callback) {
-  let user = userRegister.getById(socket.id);
-  if (user != null) {
-    // assign type to IceCandidate
-    let candidate = kurento.register.complexTypes.IceCandidate(message.candidate);
-    user.addIceCandidate(message, candidate);
-    callback();
-  } else {
-    console.error(`ice candidate with no user receive : ${message.sender}`);
-    callback(new Error("addIceCandidate failed"));
-  }
-}
-function getEndpointForUser(userSession, sender, callback) {
-
-  try {
-    if (userSession.userId === sender.userId) {
-      return callback(null, userSession.outgoingMedia);
-    }
-
-    let incoming = userSession.incomingMedia[sender.userId];
-    console.log(userSession.userId + "    " + sender.userId);
-    if (incoming == null) {
-      console.log(`user : ${userSession.id} create endpoint to receive video from : ${sender.id}`);
-      getRoom(userSession.roomName, (error, room) => {
-        if (error) {
-          console.error(error);
-          callback(error);
-          return;
-        }
-        room.pipeline.create('WebRtcEndpoint', (error, incoming) => {
-          if (error) {
-            if (Object.keys(room.participants).length === 0) {
-              room.pipeline.release();
-            }
-            console.error('error: ' + error);
-            callback(error);
-            return;
-          }
-
-          console.log(`user: ${userSession.userId} successfully create pipeline`);
-          incoming.setMaxVideoRecvBandwidth(bandwidth);
-          incoming.setMinVideoRecvBandwidth(bandwidth);
-          userSession.incomingMedia[sender.userId] = incoming;
-
-
-          // add ice candidate the get sent before endpoints is establlished
-          let iceCandidateQueue = userSession.iceCandidateQueue[sender.userId];
-          if (iceCandidateQueue) {
-            while (iceCandidateQueue.length) {
-              let message = iceCandidateQueue.shift();
-              console.log(`user: ${userSession.userId} collect candidate for ${message.data.sender}`);
-              incoming.addIceCandidate(message.candidate);
-            }
-          }
-
-          incoming.on('OnIceCandidate', event => {
-
-            let candidate = kurento.register.complexTypes.IceCandidate(event.candidate);
-            userSession.sendMessage({
-              id: 'iceCandidate',
-              userId: sender.userId,
-              candidate: candidate
-            });
-          });
-
-          sender.outgoingMedia.connect(incoming, error => {
-            if (error) {
-              console.log(error);
-              callback(error);
-              return;
-            }
-            callback(null, incoming);
-          });
-        });
-      })
-    } else {
-      console.log(`user: ${userSession.name} get existing endpoint to receive video from: ${sender.name}`);
-      sender.outgoingMedia.connect(incoming, error => {
-        if (error) {
-          callback(error);
-        }
-        callback(null, incoming);
-      });
-    }
-  } catch (error) {
-    console.log(error)
-  }
-
-}
 
 
