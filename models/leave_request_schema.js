@@ -16,12 +16,12 @@ const leaveRequestSchema = mongoose.Schema(
     leaveDuration: {
       type: Number,
     },
-    // leave_start_date: {
-    // 	type: Date,
-    // },
-    // leave_end_date: {
-    // 	type: Date,
-    // },
+    leave_start_date: {
+      type: Date,
+    },
+    leave_end_date: {
+      type: Date,
+    },
     leave_reason: {
       type: String,
     },
