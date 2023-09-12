@@ -63,11 +63,6 @@ exports.createSpace = async (req, res) => {
     };
 
     const Space = dbModels.Space(criteria);
-    if (!Space) {
-      return res.status(500).send({
-        message: "Space error",
-      });
-    }
     await Space.save();
 
     return res.status(200).send({
