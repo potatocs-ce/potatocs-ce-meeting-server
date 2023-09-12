@@ -55,7 +55,6 @@ exports.getUserData = async (req, res) => {
     _id: req.params.userId,
   };
 
-  const userData = req.params.userData;
   try {
     const userData = await dbModels.Member.findOne(criteria);
     // console.log('[[ getuserData ]]', userData)
