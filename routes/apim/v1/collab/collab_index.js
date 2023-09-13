@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 /*-----------------------------------
-	Contollers
+    Contollers
 -----------------------------------*/
 
 const meetingController = require('./meeting/meeting_controller')
@@ -15,6 +15,7 @@ const meetingController = require('./meeting/meeting_controller')
 
 // realTime
 router.get('/getMeetingData', meetingController.getMeetingData)
+router.get('/getMeetingDataTest', meetingController.getMeetingDataTest)
 router.get('/getUserData/:userId', meetingController.getUserData)
 // realTime chat
 router.post('/createChat', meetingController.createChat)
