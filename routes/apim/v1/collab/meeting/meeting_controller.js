@@ -36,39 +36,6 @@ exports.getMeetingData = async (req, res) => {
     }
 };
 
-exports.getMeetingDataTest = async (req, res) => {
-    console.log(`
---------------------------------------------------
-  User : 
-  API  : Get my Meeting
-  router.get(/getMeetingData', meetingContollder.getMeetingData);
---------------------------------------------------`);
-    const dbModels = global.DB_MODELS;
-
-    const meetingId = req.query.meetingId;
-    // console.log('[[ meetingId ]]', meetingId)
-
-    const criteria = {
-        _id: req.query.meetingId,
-    };
-
-    try {
-        const meetingData = await dbModels.Meeting.findOne(criteria).populate(
-            "enlistedMembers"
-        );
-        // console.log('[[ getMeetingData ]]', meetingData)
-        console.log("-------------------------------------------");
-
-        return res.send({
-            success: true,
-            meetingData,
-        });
-    } catch (err) {
-        console.log("[ ERROR ]", err);
-        res.status(500).send("getMeetingData Error");
-    }
-};
-
 /* 
     Get User Data
 */
