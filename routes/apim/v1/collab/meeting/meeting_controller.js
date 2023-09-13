@@ -637,3 +637,43 @@ exports.getMeetingStatus = async (req, res) => {
         });
     }
 };
+
+
+
+exports.getMeetingStatusTest = async (req, res) => {
+    console.log(`
+--------------------------------------------------
+  API  : Get a meeting status
+  router.get('/getMeetingStatus', MeetingContollder.getMeetingStatus);
+--------------------------------------------------`);
+    // console.log('[[getMeetingStatus]] >>>>>> ', req.query)
+
+    const dbModels = global.DB_MODELS;
+
+    try {
+        const criteria = {
+            _id: req.query.meetingId,
+        };
+
+        // meetingId를 이용하여 status 값 확인
+        const getMeetingStatus = await dbModels.Meeting.findOne(criteria).select(
+            "status"
+        );
+        // console.log('[[ getMeetingStatus ]]', getMeetingStatus)
+
+        if (!getMeetingStatus) {
+            return res.status(400).send("invalid getMeetingStatus");
+        }
+
+        const getStatus = {
+            _id: getMeetingStatus._id,
+            status: getMeetingStatus.status,
+        };
+
+        return res.status(200).send(getStatus);
+    } catch (err) {
+        return res.status(500).send({
+            message: "get a getMeetingStatushad an error",
+        });
+    }
+};
