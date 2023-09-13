@@ -30,4 +30,11 @@ router.get('/getRoleUpdate', meetingController.getRoleUpdate)
 // realTime meeting status
 router.get('/getMeetingStatus', meetingController.getMeetingStatus)
 
+
+router.get('/getChatTest', meetingController.getChatTest)
+router.get('/getParticipantStateTest', meetingController.getParticipantStateTest)
+router.get('/getOnlineTrueTest', meetingController.getOnlineTrueTest)
+router.get('/getOnlineFalseTest', meetingController.getOnlineFalseTest)
+router.get('/getRoleUpdateTest', meetingController.getRoleUpdateTest)
+router.get('/getMeetingStatusTest', meetingController.getMeetingStatusTest)
 module.exports = router;
