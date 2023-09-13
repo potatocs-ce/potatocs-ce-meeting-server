@@ -144,6 +144,38 @@ exports.getChat = async (req, res) => {
     }
 };
 
+exports.getChatTest = async (req, res) => {
+    console.log(`
+--------------------------------------------------
+  API  : Get a chat
+  router.get('/getChat', MeetingContollder.getChat);
+--------------------------------------------------`);
+    // console.log('[[getChat]] >>>>>> ', req.query.meetingId)
+
+    const dbModels = global.DB_MODELS;
+
+    try {
+        const criteria = {
+            meetingId: req.query.meetingId,
+        };
+
+        // 원하는 값만 query 하기 공백으로 구분
+        const MeetingChat = await dbModels.MeetingChat.find(criteria).select(
+            "userId chatMember createdAt chatContent"
+        );
+
+        if (!MeetingChat) {
+            return res.status(400).send("invalid meeting chat");
+        }
+
+        return res.status(200).send(MeetingChat);
+    } catch (err) {
+        return res.status(500).send({
+            message: "creatintg a meeting chat had an error",
+        });
+    }
+};
+
 /*
     Delete a chat
 */
