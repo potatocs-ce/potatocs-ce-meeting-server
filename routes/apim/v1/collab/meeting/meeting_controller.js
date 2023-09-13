@@ -471,6 +471,47 @@ exports.getOnlineFalse = async (req, res) => {
     }
 };
 
+exports.getOnlineFalseTest = async (req, res) => {
+    console.log(`
+--------------------------------------------------
+  API  : Get a role
+  router.get('/getOnlineFalse', MeetingContollder.getOnlineFalse);
+--------------------------------------------------`);
+    // console.log('[[getOnlineFalse]] >>>>>> ', req.query)
+
+    const dbModels = global.DB_MODELS;
+
+    try {
+        // meetingId를 이용하여 field 찾고 찾은 field에서 값 수정
+        // $는 배열의 몇 번째인지 index와 같은 역할
+        const getOnlineFalse = await dbModels.Meeting.findOneAndUpdate(
+            {
+                _id: req.query.meetingId, // meetingId
+                "currentMembers.member_id": req.query.userId, // userId
+            },
+            {
+                $set: {
+                    "currentMembers.$.online": false,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+        // console.log('[[ getOnlineFalse ]]', getOnlineFalse)
+
+        if (!getOnlineFalse) {
+            return res.status(400).send("invalid meeting online");
+        }
+
+        return res.status(200).send(getOnlineFalse);
+    } catch (err) {
+        return res.status(500).send({
+            message: "get a meeting role had an error",
+        });
+    }
+};
+
 /*
     Update a Role
 */
