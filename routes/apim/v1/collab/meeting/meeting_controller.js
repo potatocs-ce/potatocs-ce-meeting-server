@@ -380,6 +380,53 @@ exports.getOnlineTrue = async (req, res) => {
     }
 };
 
+
+exports.getOnlineTrueTest = async (req, res) => {
+    console.log(`
+--------------------------------------------------
+  API  : Get a role
+  router.get('/getOnlineTrue', MeetingContollder.getOnlineTrue);
+--------------------------------------------------`);
+    // console.log('[[getOnlineTrue]] >>>>>> ', req.query)
+
+    /**
+       * req.query = {
+       * 	 meetingId: '61dfc310f3aedb66a1786e8e',
+               userId: '61d3f9c13b83fffca344bf58'
+       * }
+       */
+    const dbModels = global.DB_MODELS;
+
+    try {
+        const getOnlineTrue = await dbModels.Meeting.findOneAndUpdate(
+            {
+                _id: req.query.meetingId, // meetingId
+                "currentMembers.member_id": req.query.userId, // userId
+            },
+            {
+                $set: {
+                    "currentMembers.$.online": true,
+                },
+            },
+            {
+                new: true,
+            }
+        );
+        // console.log('[[ getOnlineTrue ]]', getOnlineTrue)
+        console.log("-------------------------------------------");
+
+        if (!getOnlineTrue) {
+            return res.status(400).send("invalid meeting online");
+        }
+
+        return res.status(200).send(getOnlineTrue);
+    } catch (err) {
+        return res.status(500).send({
+            message: "get a meeting role had an error",
+        });
+    }
+};
+
 /*
     Get a onLine
 */
