@@ -279,7 +279,7 @@ exports.deleteDrawingEvent = async (req, res) => {
       return res.status(400).send('invalid meeting id');
     }
 
-    // result = await dbModels.Doc.findOneAndUpdate({ _id: req.query._id },{});
+    result = await dbModels.Doc.findOneAndUpdate({ _id: req.query._id }, {});
 
 
     result = await dbModels.Doc.findOneAndUpdate(

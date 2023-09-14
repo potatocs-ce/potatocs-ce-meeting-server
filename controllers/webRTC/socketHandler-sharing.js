@@ -462,12 +462,10 @@ function getRoom(roomName, callback) {
   if (room == null) {
     console.log('create new room : ' + roomName);
     try {
-      console.log('111111111111')
       getKurentoClient((error, kurentoClient) => {
         if (error) {
           return callback(error);
         }
-        console.log('222222222')
         kurentoClient.create('MediaPipeline', (error, pipeline) => {
           if (error) {
             return callback(error);
@@ -564,8 +562,7 @@ function join(socket, room, callback) {
         });
       }
     }
-    console.log('existingUsers-----------------------------')
-    console.log(existingUsers)
+
     userSession.sendMessage({
       id: 'existingParticipants',
       data: existingUsers,
@@ -589,10 +586,7 @@ function receiveVideoFrom(socket, senderUserId, sdpOffer, callback) {
 
   getEndpointForUser(userSession, sender, (error, endpoint) => {
     try {
-      // if (error) {
-      //     console.error(error);
-      //     callback(error);
-      // }
+
 
       endpoint.processOffer(sdpOffer, (error, sdpAnswer) => {
         console.log(`process offer from ${sender.userId} to ${userSession.userId}`);
