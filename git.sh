@@ -5,8 +5,8 @@
 BRANCH_NAME="honey"
 
 # 직접 변수를 설정할 수 있도록 변경
-input_date="2023-09-14"  # 날짜를 직접 설정
-commit_message="[Refactoring] whiteBoard refectoring"  # 커밋 메시지를 직접 설정
+input_date="2023-09-15"  # 날짜를 직접 설정
+commit_message="[Update] Manager Data validate"  # 커밋 메시지를 직접 설정
 
 # 날짜가 유효한지 확인 (Mac OS 호환성을 위해 수정)
 if ! date -j -f "%Y-%m-%d" "$input_date" > /dev/null 2>&1; then
