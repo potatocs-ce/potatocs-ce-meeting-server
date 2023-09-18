@@ -25,10 +25,6 @@ exports.requestLeave = async (req, res) => {
 
     // console.log(req.body);
 
-    if (!getManagerData) {
-      return res.status(404).send({ message: 'Manager data was not found' })
-    }
-
     const newLeaveRequest = dbModels.LeaveRequest(req.body);
 
     await newLeaveRequest.save();
@@ -81,6 +77,8 @@ exports.getMyLeaveStatus = async (req, res) => {
         }
       },
     ]);
+
+    userLeaveStatus.filter(x => x.usedLeaveInfo === data)
 
     console.log(userLeaveStatus);
 
