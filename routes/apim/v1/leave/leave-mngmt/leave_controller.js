@@ -78,8 +78,6 @@ exports.getMyLeaveStatus = async (req, res) => {
       },
     ]);
 
-    userLeaveStatus.filter(x => x.usedLeaveInfo === data)
-
     console.log(userLeaveStatus);
 
 
