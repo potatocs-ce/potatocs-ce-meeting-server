@@ -272,7 +272,6 @@ exports.deleteDrawingEvent = async (req, res) => {
 --------------------------------------------------`);
   const dbModels = global.DB_MODELS;
 
-  console.log(req.query)
   try {
 
     if (!req.query._id) {
@@ -295,8 +294,9 @@ exports.deleteDrawingEvent = async (req, res) => {
         }
       }
     );
-
-    console.log(result);
+    if (!result) {
+      return res.status(404).send({ message: 'Doc was not found!' })
+    }
 
     return res.status(200).send({
       message: 'drawing Event delete',
