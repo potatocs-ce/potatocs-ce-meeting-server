@@ -197,8 +197,6 @@ exports.myEmployeeList = async (req, res) => {
 
     console.log(myEmployeeList);
 
-    await myEmployeeList.filter(x => x.emp_end_date > moment().date)
-
     return res.status(200).send({
       message: 'found',
       myEmployeeList
@@ -267,17 +265,17 @@ exports.UpdateEmployeeInfo = async (req, res) => {
       _id: req.body.employeeId
     }
 
-    const updateData = {
-      name: req.body.name,
-      position: req.body.position,
-      location: req.body.location,
-      emp_start_date: req.body.emp_start_date,
-      emp_end_date: req.body.emp_end_date,
-      annual_leave: req.body.annual_leave,
-      sick_leave: req.body.sick_leave,
-      replacementday_leave: req.body.replacementday_leave,
-    }
-
+    // const updateData = {
+    //   name: req.body.name,
+    //   position: req.body.position,
+    //   location: req.body.location,
+    //   emp_start_date: req.body.emp_start_date,
+    //   emp_end_date: req.body.emp_end_date,
+    //   annual_leave: req.body.annual_leave,
+    //   sick_leave: req.body.sick_leave,
+    //   replacementday_leave: req.body.replacementday_leave,
+    // }
+    const updateData = { ...req.body }
     const employee = await dbModels.Member.findOneAndUpdate(criteria, updateData);
 
     if (!employee) {
