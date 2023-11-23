@@ -45,6 +45,10 @@ const fs = require("fs");
     S3 CONFIG
 ----------------------------------------- */
 // AWS.config.loadFromPath('./config/S3config.json');
+/*
+이 코드는 AWS SDK를 사용하여 AWS S3 서비스에 접근하기 위한 S3 객체를 생성하는 부분입니다. 
+여러 AWS 서비스 중에서 S3는 객체 스토리지 서비스로 파일이나 데이터를 안전하게 저장할 수 있도록 지원합니다.
+*/
 const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
