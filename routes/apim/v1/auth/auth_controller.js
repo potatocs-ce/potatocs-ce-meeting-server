@@ -64,7 +64,7 @@ exports.signIn = async (req, res) => {
         /*------------------------------------------
             5. send token and profile info to client
         --------------------------------------------*/
-        res.json({
+        res.send({
             token
         });
 
