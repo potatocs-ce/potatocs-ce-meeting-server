@@ -110,19 +110,13 @@ exports.acceptRequest = async (req, res) => {
 			accepted: true
 		}
 
-		// 휴가 승인 업데이트
-		const updatedRequest = await dbModels.LeaveRequest.findOneAndUpdate(criteria, updateData);
-		// const updatedRequest = await dbModels.LeaveRequest.findOne(criteria);
-		if (!updatedRequest) {
-			return res.status(404).send('the update1 has failed');
-		}
 		const updatedData = await dbModels.Manager.findOneAndUpdate(updateCriteria, updateData);
 		if (!updatedData) {
 			return res.status(404).send('the update has failed');
 		}
 
 
-		console.log(updatedData);
+		// console.log(updatedData);
 
 		const criteria = {
 			_id: req.decoded._id
