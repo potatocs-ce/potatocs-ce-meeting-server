@@ -24,7 +24,21 @@ exports.getManager = async (req, res) => {
         message: "findManager",
       });
     }
+    // 휴가 승인 업데이트
+    const updatedRequest = await dbModels.LeaveRequest.findOneAndUpdate(criteria, updateData);
+    // const updatedRequest = await dbModels.LeaveRequest.findOne(criteria);
+    if (!updatedRequest) {
+      return res.status(404).send('the update1 has failed');
+    }
 
+    // 해당 직원 정보 > 가지고 있는 휴가처리 (마이너스 처리)
+    const findRequestor = {
+      _id: updatedRequest.requestor
+    }
+    const requestorInfo = await dbModels.Member.findOne(findRequestor);
+    if (!updatedRequest) {
+      return res.status(404).send('the update2 has failed');
+    }
     const managerCriteria = {
       _id: requestedManager.myManager,
     };
@@ -123,8 +137,8 @@ exports.addManager = async (req, res) => {
 };
 
 /*
-	manager_schema 안에 데이터가 있을 때
-	accepted => false = 펜딩중 true = 수락 후 매니저/직원 관계
+  manager_schema 안에 데이터가 있을 때
+  accepted => false = 펜딩중 true = 수락 후 매니저/직원 관계
 */
 exports.cancelPending = async (req, res) => {
   console.log(`
