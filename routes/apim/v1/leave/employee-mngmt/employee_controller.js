@@ -195,7 +195,7 @@ exports.myEmployeeList = async (req, res) => {
 			}
 		]);
 
-		console.log(myEmployeeList);
+		// console.log(myEmployeeList);
 
 		return res.status(200).send({
 			message: 'found',
