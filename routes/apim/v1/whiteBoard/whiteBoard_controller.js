@@ -15,7 +15,16 @@ exports.meetingInfo = async (req, res) => {
   router.get(/meetingInfo:meetingId', whiteBoardContollder.meetingInfo);
 --------------------------------------------------`);
   const dbModels = global.DB_MODELS;
+  console.log(dbModels);
 
+  // const criteria = {
+  //     _id: new mongoose.Types.ObjectId(),
+  //     meetingName: 'testRoom',
+  //     meetingCreator: '이정운', // 회의 생성자
+  //     member: ['haha', 'hoho', 'hihi'], // 회의 참가자
+  //     banMember: ['koko', 'momo'], // 벤 당한 참가자
+  // }
+  console.log(req.params.meetingId);
   // 미팅 아이디
   const criteria = {
     _id: req.params.meetingId,
