@@ -135,7 +135,7 @@ exports.document = async (req, res) => {
         Key: key,
       })
       .createReadStream()
-      .on("error", (error) => {});
+      .on("error", (error) => { });
     file.pipe(res);
   });
 

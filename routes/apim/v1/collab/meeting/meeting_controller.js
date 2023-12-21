@@ -1,7 +1,11 @@
 const { ObjectId } = require("bson");
 
 /* 
-    Get Meeting Data
+
+  Get Meeting Data
+
+
+
 */
 exports.getMeetingData = async (req, res) => {
     console.log(`
@@ -37,7 +41,9 @@ exports.getMeetingData = async (req, res) => {
 };
 
 /* 
+
     Get User Data
+
 */
 exports.getUserData = async (req, res) => {
     console.log(`
@@ -77,7 +83,9 @@ exports.getUserData = async (req, res) => {
 };
 
 /*
+
     Create a chat
+
 */
 exports.createChat = async (req, res) => {
     console.log(`
@@ -110,7 +118,9 @@ exports.createChat = async (req, res) => {
 };
 
 /*
+
     Get a chat
+
 */
 exports.getChat = async (req, res) => {
     console.log(`
@@ -145,7 +155,9 @@ exports.getChat = async (req, res) => {
 };
 
 /*
+
     Delete a chat
+
 */
 exports.deleteChat = async (req, res) => {
     console.log(`
@@ -188,7 +200,9 @@ exports.deleteChat = async (req, res) => {
 };
 
 /*
+
     Delete All of chat
+
 */
 exports.deleteAllOfChat = async (req, res) => {
     console.log(`
@@ -231,7 +245,9 @@ exports.deleteAllOfChat = async (req, res) => {
 };
 
 /*
+
     Get a role
+
 */
 exports.getParticipantState = async (req, res) => {
     console.log(`
@@ -267,7 +283,9 @@ exports.getParticipantState = async (req, res) => {
 };
 
 /*
+
     Get a onLine
+
 */
 exports.getOnlineTrue = async (req, res) => {
     console.log(`
@@ -275,6 +293,7 @@ exports.getOnlineTrue = async (req, res) => {
   API  : Get a role
   router.get('/getOnlineTrue', MeetingContollder.getOnlineTrue);
 --------------------------------------------------`);
+
     // console.log('[[getOnlineTrue]] >>>>>> ', req.query)
 
     /**
@@ -312,11 +331,14 @@ exports.getOnlineTrue = async (req, res) => {
         return res.status(500).send({
             message: "get a meeting role had an error",
         });
+
     }
 };
 
 /*
+
     Get a onLine
+
 */
 exports.getOnlineFalse = async (req, res) => {
     console.log(`
@@ -360,7 +382,9 @@ exports.getOnlineFalse = async (req, res) => {
 };
 
 /*
+
     Update a Role
+
 */
 exports.getRoleUpdate = async (req, res) => {
     console.log(`
@@ -404,7 +428,9 @@ exports.getRoleUpdate = async (req, res) => {
 };
 
 /*
+
     Update a meeting status
+
 */
 exports.getMeetingStatus = async (req, res) => {
     console.log(`
