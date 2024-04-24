@@ -28,10 +28,36 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use('/apim/v1', require('./routes/apim/v1'));
+
+/* -----------------------------------------
+    npm run test 
+    npm run prod
+----------------------------------------- */
+if (process.env.NODE_ENV.trim() == 'production') {
+    require('dotenv').config({ path: path.join(__dirname, '/env/prod.env') });
+} else if (process.env.NODE_ENV.trim() == 'development') {
+    require('dotenv').config({ path: path.join(__dirname, '/env/dev.env') });
+}
+
+
+/* -----------------------------------------
+    DB
+----------------------------------------- */
+const mongApp = require('./database/mongoDB');
+
 
 const httpsServer = https.createServer(options, app)
 httpsServer.listen(3000, '0.0.0.0', () => {
     console.log('Listening on https://' + config.listenIp + ':' + config.listenPort)
+
+    /*----------------------------------
+    CONNECT TO MONGODB SERVER
+------------------------------------*/
+    mongApp.appSetObjectId(app);
 })
 // 소켓
 
@@ -41,7 +67,6 @@ const io = new Server(httpsServer, {
     },
     path: '/socket/'
 })
-
 
 
 

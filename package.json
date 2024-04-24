@@ -4,16 +4,20 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon app.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "set NODE_ENV=development && nodemon app.js",
+        "prod": "set NODE_ENV=production && nodemon app.js",
+        "linux-test": "export NODE_ENV=development && nodemon app.js",
+        "linux-prod": "export NODE_ENV=production && nodemon app.js"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "bcryptjs": "^2.4.3",
         "dotenv": "^16.4.5",
         "express": "^4.18.2",
         "httpolyglot": "^0.1.2",
+        "jsonwebtoken": "^9.0.2",
         "mediasoup": "^3.13.13",
         "mongoose": "^8.3.2",
         "nodemon": "^3.0.2",

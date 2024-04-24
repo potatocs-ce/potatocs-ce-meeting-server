@@ -24,6 +24,8 @@ function createSchema() {
 
 
     dbModels.VideoDrawing = require('../models/video_drawing');
+    dbModels.Meeting = require('../models/meeting_schema');
+    dbModels.Member = require('../models/member_schema');
 
     global.DB_MODELS = dbModels;
 }
