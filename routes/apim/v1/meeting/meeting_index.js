@@ -1,7 +1,8 @@
 const router = require('express').Router();
-const authController = require('./meeting_controller');
+const meetingController = require('./meeting_controller');
 
-// /* 로그인  */
-router.get('/meetingInfo/:meetingId', authController.meetingInfo);
+// /* 미팅 정보 조회  */
+router.get('/meetingInfo/:meetingId', meetingController.meetingInfo);
+router.get('/getParticipantState/:meetingId', meetingController.getParticipantState)
 
 module.exports = router;

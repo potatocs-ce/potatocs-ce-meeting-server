@@ -2,6 +2,7 @@ const Room = require('../Room')
 const Peer = require('../Peer')
 const config = require('../config')
 const mediasoup = require('mediasoup');
+const meeting_controller = require('../routes/apim/v1/meeting/meeting_controller')
 let nextMediasoupWortkerIdx = 0;
 
 // room list 
@@ -65,11 +66,14 @@ module.exports = function (io, socket, app) {
         }
     })
 
-    socket.on('join', ({ room_id, name }, cb) => {
+    socket.on('join', async ({ room_id, name, user_id }, cb) => {
         console.log('User joined', {
             room_id,
-            name
+            name,
+            user_id
         })
+
+
 
         if (!roomList.has(room_id)) {
             return cb({
@@ -79,9 +83,28 @@ module.exports = function (io, socket, app) {
 
         roomList.get(room_id).addPeer(new Peer(socket.id, name))
         socket.room_id = room_id;
+        socket.user_id = user_id;
 
         // 소켓에 조인 시도
         socket.join(room_id)
+        socket.to(socket.room_id).emit('user_join', { room_id: socket.room_id, user_id: socket.user_id })
+        // 데이터베이스 업데이트
+        const dbModels = global.DB_MODELS;
+
+        await dbModels.Meeting.findOneAndUpdate(
+            {
+                _id: room_id, // meetingId
+                'currentMembers.member_id': user_id, // userId
+            },
+            {
+                $set: {
+                    'currentMembers.$.online': true
+                }
+            },
+            {
+                new: true
+            })
+
 
         cb(roomList.get(room_id).toJson())
     })
@@ -149,31 +172,33 @@ module.exports = function (io, socket, app) {
 
         console.log(kind, rtpParameters, producerTransportId)
         let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind);
-
+        // console.log(socket.room_id, socket.)
         console.log('Produce', {
             type: `${kind}`,
+            user_id: socket.user_id,
             name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
             id: `${producer_id}`
         })
 
         callback({
-            producer_id, type: `${kind}`, name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`
+            producer_id, type: `${kind}`, user_id: socket.user_id, name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`
         })
     })
 
     // 수신
     socket.on('consume', async ({ consumerTransportId, producerId, rtpCapabilities, producer_socket_id }, callback) => {
         let { params, name } = await roomList.get(socket.room_id).consume(socket.id, consumerTransportId, producerId, rtpCapabilities, producer_socket_id)
-
+        console.log(await roomList.get(socket.room_id).consume(socket.id, consumerTransportId, producerId, rtpCapabilities, producer_socket_id))
 
         console.log('Consuming', {
             name: `${roomList.get(socket.room_id) && roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
+            user_id: socket.usre_id,
             producer_id: `${producerId}`,
             consumer_id: `${params.id}`,
             encodings: params.rtpParameters
         })
 
-        callback({ params, name })
+        callback({ params, name, user_id: socket.user_id })
     })
 
     // 이건 뭐지....
@@ -188,12 +213,32 @@ module.exports = function (io, socket, app) {
     })
 
     // 끊어지면 끈허진 놈 연결 끊기
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         console.log('Disconnect', {
             name: `${roomList.get(socket.room_id) && roomList.get(socket.room_id).getPeers().get(socket.id).name}`
         })
 
         if (!socket.room_id) return
+
+
+        const dbModels = global.DB_MODELS;
+
+        await dbModels.Meeting.findOneAndUpdate(
+            {
+                _id: socket.room_id, // meetingId
+                'currentMembers.member_id': socket.user_id, // userId
+            },
+            {
+                $set: {
+                    'currentMembers.$.online': false
+                }
+            },
+            {
+                new: true
+            })
+
+        socket.to(socket.room_id).emit('user_exit', { room_id: socket.room_id, user_id: socket.user_id })
+
         roomList.get(socket.room_id).removePeer(socket.id)
     })
 
@@ -226,9 +271,17 @@ module.exports = function (io, socket, app) {
             roomList.delete(socket.room_id)
         }
 
+        socket.to(socket.room_id).emit('user_exit', { room_id: socket.room_id, user_id: socket.user_id })
+
         socket.room_id = null
 
         callback('successfully exited room')
+    })
+
+
+
+    socket.on('roleUpdate', (data) => {
+        socket.to(data.room_id).emit('refreshRole');
     })
 }
 /*
