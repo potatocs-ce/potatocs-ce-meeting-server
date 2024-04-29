@@ -81,7 +81,8 @@ module.exports = function (io, socket, app) {
             })
         }
 
-        roomList.get(room_id).addPeer(new Peer(socket.id, name))
+        roomList.get(room_id).addPeer(new Peer(socket.id, user_id))
+
         socket.room_id = room_id;
         socket.user_id = user_id;
 
@@ -181,7 +182,7 @@ module.exports = function (io, socket, app) {
         })
 
         callback({
-            producer_id, type: `${kind}`, user_id: socket.user_id, name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`
+            producer_id, type: `${kind}`, user_id: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`
         })
     })
 
@@ -192,13 +193,13 @@ module.exports = function (io, socket, app) {
 
         console.log('Consuming', {
             name: `${roomList.get(socket.room_id) && roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
-            user_id: socket.usre_id,
+            user_id: socket.user_id,
             producer_id: `${producerId}`,
             consumer_id: `${params.id}`,
             encodings: params.rtpParameters
         })
 
-        callback({ params, name, user_id: socket.user_id })
+        callback({ params, user_id: name })
     })
 
     // 이건 뭐지....
