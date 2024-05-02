@@ -1,3 +1,5 @@
+var mongoose = require('mongoose');
+
 exports.meetingInfo = async (req, res) => {
     console.log(`
     --------------------------------------------------
@@ -108,6 +110,55 @@ exports.getChat = async (req, res) => {
     }
 }
 
+
+exports.getVideoDrawings = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+      API  : getVdieoDrawings
+      router.get('/getVdieoDrawings/:meetingId', MeetingContollder.getVideoDrawings);
+    --------------------------------------------------`);
+
+    const dbModels = global.DB_MODELS;
+
+
+    try {
+
+        const meetingId = req.params.meetingId;
+
+        console.log(meetingId)
+        // 원하는 값만 query 하기 공백으로 구분
+        const VideoDrawings = await dbModels.VideoDrawing.aggregate([
+            {
+                $match: {
+                    meetingId: new mongoose.Types.ObjectId(meetingId)
+                }
+            },
+            {
+                $group: {
+                    _id: "$targetId",
+                    data: { $addToSet: { drawingEvent: "$drawingEvent", userId: "$userId" } }
+                }
+            }
+        ])
+
+        console.log(VideoDrawings)
+
+        if (!VideoDrawings) {
+            return res.status(400).send('invalid meeting chat');
+        }
+
+        return res.status(200).send(
+            VideoDrawings
+        )
+
+    } catch (err) {
+        console.error(err)
+        return res.status(500).send({
+            message: 'creatintg a meeting chat had an error'
+        });
+
+    }
+}
 
 exports.createChat = async (req, res) => {
     console.log(`
