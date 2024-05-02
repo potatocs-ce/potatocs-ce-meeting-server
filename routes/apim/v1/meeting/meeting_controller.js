@@ -71,3 +71,78 @@ exports.getParticipantState = async (req, res) => {
     }
 
 }
+
+
+// 채팅 정보 가져오기
+exports.getChat = async (req, res) => {
+    console.log(`
+--------------------------------------------------
+  API  : Get a chat
+  router.get('/getChat', MeetingContollder.getChat);
+--------------------------------------------------`);
+
+    const dbModels = global.DB_MODELS;
+
+    try {
+        const criteria = {
+            meetingId: req.params.meetingId,
+        }
+
+        // 원하는 값만 query 하기 공백으로 구분
+        const MeetingChat = await dbModels.MeetingChat.find(criteria).select('userId chatMember createdAt chatContent');
+
+        if (!MeetingChat) {
+            return res.status(400).send('invalid meeting chat');
+        }
+
+        return res.status(200).send(
+            MeetingChat
+        )
+
+    } catch (err) {
+
+        return res.status(500).send({
+            message: 'creatintg a meeting chat had an error'
+        });
+
+    }
+}
+
+
+exports.createChat = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+      API  : Create a chat
+      router.post('/createChat', MeetingContollder.createChat);
+    --------------------------------------------------`);
+    // console.log('[[createChat]] >>>>>> ', req.body)
+
+    const dbModels = global.DB_MODELS;
+
+    const user_name = await dbModels.Member.findOne({ _id: req.body.userId }).select('name');
+
+
+    try {
+        const criteria = {
+            meetingId: req.body.meetingId,
+            userId: req.body.userId,
+            chatMember: user_name.name,
+            chatContent: req.body.chatContent
+        }
+
+        const Meeting = dbModels.MeetingChat(criteria);
+        // console.log("[[ createChat ]] >>>>", Meeting)
+        await Meeting.save();
+
+        return res.status(200).send(
+            Meeting
+        )
+
+    } catch (err) {
+
+        return res.status(500).send({
+            message: 'creatintg a meeting chat had an error'
+        });
+
+    }
+}

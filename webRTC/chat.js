@@ -1,6 +1,8 @@
 module.exports = function (io, socket, app) {
-    socket.on('sendChat', (chatData) => {
+    socket.on('sendChat', (chatData, callback) => {
         socket.to(chatData.room_id).emit('receiveChatData', chatData);
+
+        callback(chatData)
     })
 
     socket.on('deletChat', (data) => {

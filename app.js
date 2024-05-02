@@ -72,9 +72,11 @@ const io = new Server(httpsServer, {
 
 const socket_mediasoup = require('./webRTC/mediasoup.js');
 const socket_drawing = require('./webRTC/drawing.js');
+const socket_chat = require('./webRTC/chat.js');
 
 io.on('connection', (socket) => {
     socket_mediasoup(io, socket, app);
     socket_drawing(io, socket, app);
+    socket_chat(io, socket, app);
 })
 

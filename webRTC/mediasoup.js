@@ -199,7 +199,9 @@ module.exports = function (io, socket, app) {
             encodings: params.rtpParameters
         })
 
-        callback({ params, user_id: name })
+        const my_name = await global.DB_MODELS.Member.findOne({ _id: name }).select('name')
+
+        callback({ params, user_id: name, name: my_name.name })
     })
 
     // 이건 뭐지....
