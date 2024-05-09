@@ -1,6 +1,6 @@
 module.exports = function (io, socket, app) {
     socket.on('draw:video', async ({ room_id, data, target_id, user_id, meeting_id }) => {
-        console.log(room_id, socket.id)
+
         const dbModels = global.DB_MODELS;
 
         const criteria = {
@@ -12,7 +12,6 @@ module.exports = function (io, socket, app) {
         dbModels.VideoDrawing(criteria).save()
 
 
-        // socket.broadcast.to(socket.)
         socket.to(room_id).emit('draw:video', { drawingEvent: data, socket_id: socket.id, target_id, user_id });
     })
 }

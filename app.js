@@ -31,8 +31,6 @@ app.use(cors({
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/apim/v1', require('./routes/apim/v1'));
-
 /* -----------------------------------------
     npm run test 
     npm run prod
@@ -43,7 +41,7 @@ if (process.env.NODE_ENV.trim() == 'production') {
     require('dotenv').config({ path: path.join(__dirname, '/env/dev.env') });
 }
 
-
+app.use('/apim/v1', require('./routes/apim/v1'));
 /* -----------------------------------------
     DB
 ----------------------------------------- */
