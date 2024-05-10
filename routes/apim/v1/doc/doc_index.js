@@ -36,5 +36,7 @@ router.get('/doc_list/:meetingId', docController.getDocList);
 // 문서 조회
 router.get('/:doc_id', docController.getDoc);
 
+router.delete('/delete/:_id', docController.deleteDoc);
+
 
 module.exports = router;

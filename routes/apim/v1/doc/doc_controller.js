@@ -1,4 +1,4 @@
-const { GetObjectCommand, S3Client } = require("@aws-sdk/client-s3");
+const { GetObjectCommand, S3Client, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const mongoose = require('mongoose');
 const s3Client = new S3Client({
     region: process.env.AWS_REGION,
@@ -99,3 +99,50 @@ exports.getDoc = async (req, res) => {
     }
 }
 
+
+// 문서 삭제
+exports.deleteDoc = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+      router.delete(/delete/:_id, meetingContollder.deleteMeetingPdfFile);
+    --------------------------------------------------`);
+    const dbModels = global.DB_MODELS;
+    console.log(req.params._id)
+    try {
+
+        if (!req.params._id) {
+            return res.status(400).send('invalid meeting id1');
+        }
+
+
+        result = await dbModels.Doc.findOne({ _id: req.params._id }, { _id: false, saveKey: true, meetingId: true });
+
+        if (!result) {
+            return res.status(400).send('invalid meeting id2');
+        }
+
+
+        const deletedDoc = await dbModels.Doc.findOneAndDelete(
+            {
+                _id: req.params._id
+            }
+        )
+
+        const command = new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: deletedDoc.saveKey, // 업로드된 파일 경로
+        });
+
+        await s3Client.send(command);
+
+        return res.status(200).send({
+            message: 'upload file delete',
+            meetingId: result.meetingId,
+        });
+
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('internal server error');
+    }
+}
