@@ -15,5 +15,6 @@ router.get('/getVideoDrawings/:meetingId', meetingController.getVideoDrawings)
 // 채팅 데이터 저장
 router.post('/createChat', meetingController.createChat);
 
+router.post('/clearVideoDrawing', meetingController.clearVideoDrawing);
 
 module.exports = router;

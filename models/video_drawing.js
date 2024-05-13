@@ -24,7 +24,10 @@ let videoDrawingSchema = new Schema({
     drawingEvent: {
         type: Object
     }
-})
+},
+    {
+        timestamps: true
+    })
 
 const VideoDrawing = mongoose.model('VideoDrawing', videoDrawingSchema);
 

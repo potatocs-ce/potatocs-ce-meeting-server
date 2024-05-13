@@ -125,7 +125,6 @@ exports.getVideoDrawings = async (req, res) => {
 
         const meetingId = req.params.meetingId;
 
-        console.log(meetingId)
         // 원하는 값만 query 하기 공백으로 구분
         const VideoDrawings = await dbModels.VideoDrawing.aggregate([
             {
@@ -134,14 +133,31 @@ exports.getVideoDrawings = async (req, res) => {
                 }
             },
             {
+                $sort: {
+                    createdAt: 1
+                }
+            },
+            {
                 $group: {
                     _id: "$targetId",
-                    data: { $addToSet: { drawingEvent: "$drawingEvent", userId: "$userId" } }
+                    data: { $addToSet: { drawingEvent: "$drawingEvent", userId: "$userId", createdAt: "$createdAt" } }
+                }
+            },
+            {
+                $unwind: "$data"
+            },
+            {
+                $sort: {
+                    "data.createdAt": 1 // 오름차순으로 정렬하려면 1, 내림차순으로 정렬하려면 -1
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id",
+                    data: { $push: "$data" }
                 }
             }
         ])
-
-        console.log(VideoDrawings)
 
         if (!VideoDrawings) {
             return res.status(400).send('invalid meeting chat');
@@ -159,6 +175,28 @@ exports.getVideoDrawings = async (req, res) => {
 
     }
 }
+
+exports.clearVideoDrawing = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+      API  : Create a chat
+      router.post('/createChat', MeetingContollder.createChat);
+    --------------------------------------------------`);
+    const { meetingId, userId } = req.body;
+    const dbModels = global.DB_MODELS;
+
+    try {
+        await dbModels.VideoDrawing.deleteMany({ meetingId, targetId: userId })
+
+        return res.status(201).send({ message: 'success' });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send({
+            message: 'clear drawings in video had an error'
+        })
+    }
+}
+
 
 exports.createChat = async (req, res) => {
     console.log(`
