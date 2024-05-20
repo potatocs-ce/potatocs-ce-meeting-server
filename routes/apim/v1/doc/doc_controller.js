@@ -59,7 +59,28 @@ exports.getDocList = async (req, res) => {
     }
 
     try {
-        const docResult = await dbModels.Doc.find(criteria).select({ saveKey: 0, meetingId: 0 });
+        const docResult = await dbModels.Doc.aggregate([
+            {
+                $match: {
+                    meetingId: req.params.meetingId
+                }
+            },
+            {
+                $lookup: {
+                    from: 'drawings',
+                    localField: '_id',
+                    foreignField: 'docId',
+                    as: 'drawings'
+                }
+            }, {
+                $project: {
+                    saveKey: 0, meetingId: 0
+                }
+            }
+        ])
+
+
+        // const docResult = await dbModels.Doc.find(criteria).select({ saveKey: 0, meetingId: 0 });
 
         return res.status(200).send(docResult);
     } catch (err) {
