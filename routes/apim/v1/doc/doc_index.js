@@ -33,6 +33,9 @@ router.post('/upload/:meetingId', upload.single('file'), docController.createDoc
 // 문서 목록 조회
 router.get('/doc_list/:meetingId', docController.getDocList);
 
+// 문서 판서 목록 조회
+router.get('/doc_drawing_list/:meetingId', docController.getDocDrawingList);
+
 // 문서 조회
 router.get('/:doc_id', docController.getDoc);
 

@@ -59,32 +59,75 @@ exports.getDocList = async (req, res) => {
     }
 
     try {
-        const docResult = await dbModels.Doc.aggregate([
-            {
-                $match: {
-                    meetingId: req.params.meetingId
-                }
-            },
-            {
-                $lookup: {
-                    from: 'drawings',
-                    localField: '_id',
-                    foreignField: 'docId',
-                    as: 'drawings'
-                }
-            }, {
-                $project: {
-                    saveKey: 0, meetingId: 0
-                }
-            }
-        ])
+        // const docResult = await dbModels.Doc.aggregate([
+        //     {
+        //         $match: {
+        //             meetingId: req.params.meetingId
+        //         }
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: 'drawings',
+        //             localField: '_id',
+        //             foreignField: 'docId',
+        //             as: 'drawings'
+        //         }
+        //     }, {
+        //         $project: {
+        //             saveKey: 0, meetingId: 0
+        //         }
+        //     }
+        // ])
 
 
-        // const docResult = await dbModels.Doc.find(criteria).select({ saveKey: 0, meetingId: 0 });
+        const docResult = await dbModels.Doc.find(criteria).select({ saveKey: 0, meetingId: 0 });
 
         return res.status(200).send(docResult);
     } catch (err) {
         console.error(err)
+        return res.status(500).send('internal server error');
+    }
+}
+
+// 문서의 판서 정보를 요청하는 api
+exports.getDocDrawingList = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+    router.post('/doc_drawing_list/:meetingId', docController.getDocDrawingList);
+    --------------------------------------------------`);
+    const dbModels = global.DB_MODELS;
+    const criteria = {
+        meetingId: req.params.meetingId
+    }
+
+
+    const pipeline = [
+        {
+            $match: {
+                meetingId: req.params.meetingId
+            }
+        },
+        {
+            $group: {
+                _id: "$docId",
+                drawings: {
+                    $push: {
+                        drawingEvent: '$drawingEvent',
+                        page: '$page',
+                        userId: '$userId'
+                    }
+                }
+            }
+        }
+    ]
+
+
+    try {
+        const result = await dbModels.DocDrawing.aggregate(pipeline);
+
+        return res.status(200).send(result);
+    } catch (err) {
+        console.error(err);
         return res.status(500).send('internal server error');
     }
 }
