@@ -282,9 +282,33 @@ module.exports = function (io, socket, app) {
     })
 
 
+    // role 업데이트
+    socket.on('updateRole', async ({ room_id, role, member_id }, callback) => {
+        console.log(member_id)
+        try {
+            const dbModels = global.DB_MODELS;
+            await dbModels.Meeting.findOneAndUpdate(
+                {
+                    _id: room_id, // meetingId
+                    'currentMembers.member_id': member_id, // userId
+                },
+                {
+                    $set: {
+                        'currentMembers.$.role': role
+                    }
+                },
+                {
+                    new: true
+                })
 
-    socket.on('roleUpdate', (data) => {
-        socket.to(data.room_id).emit('refreshRole');
+
+            socket.to(room_id).emit('refreshRole', { member_id, role });
+            callback('success')
+        } catch (err) {
+            console.error(err);
+            callback('fail')
+        }
+
     })
 }
 /*
