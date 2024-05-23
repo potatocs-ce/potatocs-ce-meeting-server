@@ -192,6 +192,9 @@ exports.deleteDoc = async (req, res) => {
             }
         )
 
+        // 판서 정보 삭제
+        await dbModels.DocDrawing.deleteMany({ docId: req.params._id })
+
         const command = new DeleteObjectCommand({
             Bucket: process.env.AWS_S3_BUCKET,
             Key: deletedDoc.saveKey, // 업로드된 파일 경로
