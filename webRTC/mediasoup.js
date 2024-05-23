@@ -310,6 +310,13 @@ module.exports = function (io, socket, app) {
         }
 
     })
+
+
+
+    // emit change 
+    socket.on('changeStatus', ({ room_id, toggle_video_whiteboard, lastDocNum, pageBuffer }) => {
+        socket.to(room_id).emit('changeStatus', { toggle_video_whiteboard, lastDocNum, pageBuffer })
+    })
 }
 /*
 worker를 순환시키면서 사용하게 만듭니다.
