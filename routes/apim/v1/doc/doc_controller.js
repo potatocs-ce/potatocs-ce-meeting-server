@@ -96,10 +96,6 @@ exports.getDocDrawingList = async (req, res) => {
     router.post('/doc_drawing_list/:meetingId', docController.getDocDrawingList);
     --------------------------------------------------`);
     const dbModels = global.DB_MODELS;
-    const criteria = {
-        meetingId: req.params.meetingId
-    }
-
 
     const pipeline = [
         {
@@ -210,6 +206,45 @@ exports.deleteDoc = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.status(500).send('internal server error');
+        return res.status(500).send('internal server error');
+    }
+}
+
+
+exports.clearDrawing = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+      router.post(/clear_drawing, meetingContoller.clearDrawing);
+    --------------------------------------------------`);
+    const dbModels = global.DB_MODELS;
+    const { meetingId, docId, page } = req.body;
+    try {
+        await dbModels.DocDrawing.deleteMany({ docId, page })
+        const pipeline = [
+            {
+                $match: {
+                    meetingId
+                }
+            },
+            {
+                $group: {
+                    _id: "$docId",
+                    drawings: {
+                        $push: {
+                            drawingEvent: '$drawingEvent',
+                            page: '$page',
+                            userId: '$userId'
+                        }
+                    }
+                }
+            }
+        ]
+        const result = await dbModels.DocDrawing.aggregate(pipeline);
+
+        return res.status(200).send(result);
+
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('internal server error')
     }
 }

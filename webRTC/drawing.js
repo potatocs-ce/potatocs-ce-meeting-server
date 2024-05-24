@@ -31,12 +31,20 @@ module.exports = function (io, socket, app) {
         }
         dbModels.DocDrawing(criteria).save();
 
+
         socket.to(room_id).emit('draw:document', { drawingEvent: data, socket_id: socket.id, user_id, doc_id, pageNum })
     })
 
     // 비디오 화면이 클리어 되었음을 알려주는 socket 신호
     socket.on('draw:video_clear', async ({ room_id, meeting_id, target_id }) => {
         socket.to(room_id).emit('draw:video_clear', { meeting_id, target_id })
+    })
+
+
+    socket.on('draw:doc_clear', async ({ meetingId, result, docId, page }) => {
+
+
+        socket.to(meetingId).emit('draw:doc_clear', { result, docId, page });
     })
 }
 
