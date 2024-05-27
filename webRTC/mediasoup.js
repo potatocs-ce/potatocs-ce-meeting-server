@@ -301,16 +301,13 @@ module.exports = function (io, socket, app) {
                     new: true
                 })
 
-
             socket.to(room_id).emit('refreshRole', { member_id, role });
             callback('success')
         } catch (err) {
             console.error(err);
             callback('fail')
         }
-
     })
-
 
 
     // emit change 
@@ -327,7 +324,7 @@ worker의 부하를 분산시켜 성능을 향상시킵니다.
 function getMediasoupWorker() {
     const worker = workers[nextMediasoupWortkerIdx]
 
-    if (++nextMediasoupWortkerIdx === workers.length) nextMediasoupWortkerIdx = 0
+    if (++nextMediasoupWortkerIdx === workers.length) nextMediasoupWortkerIdx = 0;
 
-    return worker
+    return worker;
 }
