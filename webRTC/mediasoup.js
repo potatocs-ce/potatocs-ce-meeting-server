@@ -166,13 +166,13 @@ module.exports = function (io, socket, app) {
     })
 
     // 발신
-    socket.on('produce', async ({ kind, rtpParameters, producerTransportId }, callback) => {
+    socket.on('produce', async ({ kind, rtpParameters, producerTransportId, screen }, callback) => {
         if (!roomList.has(socket.room_id)) {
             return callback({ error: 'not is a room' })
         }
 
         console.log(kind, rtpParameters, producerTransportId)
-        let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind);
+        let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind, screen);
         // console.log(socket.room_id, socket.)
         console.log('Produce', {
             type: `${kind}`,
@@ -180,6 +180,8 @@ module.exports = function (io, socket, app) {
             name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
             id: `${producer_id}`
         })
+
+        roomList.get(socket.room_id).getPeers().get(socket.id).screen = screen;
 
         callback({
             producer_id, type: `${kind}`, user_id: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`
@@ -196,7 +198,8 @@ module.exports = function (io, socket, app) {
             user_id: socket.user_id,
             producer_id: `${producerId}`,
             consumer_id: `${params.id}`,
-            encodings: params.rtpParameters
+            encodings: params.rtpParameters,
+
         })
 
         const my_name = await global.DB_MODELS.Member.findOne({ _id: name }).select('name')
@@ -215,7 +218,7 @@ module.exports = function (io, socket, app) {
         cb(roomList.get(socket.room_id).toJson())
     })
 
-    // 끊어지면 끈허진 놈 연결 끊기
+    // 끊어지면 끊어진 놈 연결 끊기
     socket.on('disconnect', async () => {
         console.log('Disconnect', {
             name: `${roomList.get(socket.room_id) && roomList.get(socket.room_id).getPeers().get(socket.id).name}`

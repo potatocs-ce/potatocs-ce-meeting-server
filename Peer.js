@@ -27,12 +27,15 @@ module.exports = class Peer {
     // producer 생성
     // rtpParameter는 RTP 패킷의 코덱, 해상도, 비트레이트 등의 설정을 포함
     // kind는 audio, video, applicatio 등을 포함
-    async createProducer(producerTransportId, rtpParameters, kind) {
+    async createProducer(producerTransportId, rtpParameters, kind, screen) {
+
         // console.log('프로튜서 생성', rtpParameters)
         let producer = await this.transports.get(producerTransportId).produce({
             kind,
             rtpParameters
         })
+
+        producer.screen = false
 
         this.producers.set(producer.id, producer)
 
@@ -90,7 +93,7 @@ module.exports = class Peer {
 
         consumer.on('layerschange', function (layers) {
             consumer.currentLayers
-            console.log('레이어', layers, consumer.currentLayers)
+            // console.log('레이어', layers, consumer.currentLayers)
 
         }.bind(this))
 

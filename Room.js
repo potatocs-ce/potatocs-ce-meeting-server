@@ -14,22 +14,21 @@ module.exports = class Room {
     }
 
     addPeer(peer) {
-        console.log(peer, '피어')
         this.peers.set(peer.id, peer)
-        console.log(this.peers)
     }
 
     getProducerListForPeer() {
-        console.log('이게 실행이 돼야 하는데 ', this.peers)
+
         let producerList = [];
-        console.log(this.peers)
+
         this.peers.forEach((peer) => {
             peer.producers.forEach((producer) => {
 
                 producerList.push({
                     producer_id: producer.id,
                     producer_socket_id: peer.id,
-                    name: peer.name
+                    name: peer.name,
+                    screen: producer.screen
                 })
             })
         })
@@ -78,11 +77,12 @@ module.exports = class Room {
         await this.peers.get(socket_id).connectTransport(transport_id, dtlsParameters)
     }
 
-    async produce(socket_id, producerTransportId, rtpParameters, kind) {
+    async produce(socket_id, producerTransportId, rtpParameters, kind, screen) {
         return new Promise(
             async function (resolve, reject) {
-                let producer = await this.peers.get(socket_id).createProducer(producerTransportId, rtpParameters, kind)
-                console.log('프로듀서!!!!', producer)
+                // console.log(screen)
+                let producer = await this.peers.get(socket_id).createProducer(producerTransportId, rtpParameters, kind, screen)
+                // console.log('프로듀서!!!!', producer)
                 resolve(producer.id)
                 this.broadCast(socket_id, 'newProducers', [
                     {
@@ -124,6 +124,7 @@ module.exports = class Room {
                 })
             }.bind(this)
         )
+
         return { params, name: this.peers.get(producer_socket_id).name }
     }
 
@@ -143,7 +144,7 @@ module.exports = class Room {
     }
 
     send(socket_id, name, data) {
-        console.log('왔다 왔다!!!!!', socket_id)
+        // console.log('왔다 왔다!!!!!', socket_id)
         this.io.to(socket_id).emit(name, data)
     }
 

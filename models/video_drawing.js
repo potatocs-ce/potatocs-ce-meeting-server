@@ -23,6 +23,10 @@ let videoDrawingSchema = new Schema({
     //뭘
     drawingEvent: {
         type: Object
+    },
+    // 스크린 공유 화면에 그렸는지 여부 판단
+    screen: {
+        type: Boolean
     }
 },
     {

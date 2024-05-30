@@ -1,6 +1,6 @@
 module.exports = function (io, socket, app) {
     // 비디오 위에 그림을 그렸음을 알려주는 소켓 신호
-    socket.on('draw:video', async ({ room_id, data, target_id, user_id, meeting_id }) => {
+    socket.on('draw:video', async ({ room_id, data, target_id, user_id, meeting_id, screen }) => {
 
         const dbModels = global.DB_MODELS;
 
@@ -8,7 +8,8 @@ module.exports = function (io, socket, app) {
             meetingId: meeting_id,
             userId: user_id,
             targetId: target_id,
-            drawingEvent: data
+            drawingEvent: data,
+            screen: screen
         }
         dbModels.VideoDrawing(criteria).save()
 

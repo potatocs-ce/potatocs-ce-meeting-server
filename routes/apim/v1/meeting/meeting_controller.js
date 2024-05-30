@@ -140,7 +140,7 @@ exports.getVideoDrawings = async (req, res) => {
             {
                 $group: {
                     _id: "$targetId",
-                    data: { $addToSet: { drawingEvent: "$drawingEvent", userId: "$userId", createdAt: "$createdAt" } }
+                    data: { $addToSet: { drawingEvent: "$drawingEvent", userId: "$userId", createdAt: "$createdAt", screen: '$screen' } }
                 }
             },
             {
