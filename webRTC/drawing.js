@@ -14,7 +14,7 @@ module.exports = function (io, socket, app) {
         dbModels.VideoDrawing(criteria).save()
 
 
-        socket.to(room_id).emit('draw:video', { drawingEvent: data, socket_id: socket.id, target_id, user_id });
+        socket.to(room_id).emit('draw:video', { drawingEvent: data, socket_id: socket.id, target_id, user_id, screen });
     })
 
 
