@@ -2,7 +2,7 @@ const { verifyToken } = require('./libraries/token');
 
 
 exports.isAuthenticated = (req, res, next) => {
-    console.log(req.headers)
+    // console.log(req.headers)
     // 토큰 취득
     const token = req.body.token || req.query.token || req.headers.authorization;
 

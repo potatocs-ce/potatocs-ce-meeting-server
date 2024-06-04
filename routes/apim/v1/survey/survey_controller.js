@@ -1,4 +1,6 @@
 
+const { ObjectId } = require('mongodb')
+
 exports.survey = async (req, res) => {
     console.log(`
 --------------------------------------------------
@@ -11,9 +13,11 @@ exports.survey = async (req, res) => {
     const dbModels = global.DB_MODELS;
     const body = req.body;
     const _id = req.params._id;
+    const user_id = req.decoded._id
 
     try {
-        await dbModels.Survey_Result({ survey_id: _id, result: body }).save();
+        await dbModels.Survey_Result({ survey_id: _id, result: body, user_id }).save();
+
         res.status(200).json({ status: true })
     } catch (err) {
         console.log('[ERROR]', err);
@@ -138,10 +142,44 @@ exports.getSurveys = async (req, res) => {
     --------------------------------------------------
         `)
 
+    const userId = req.decoded._id; // 조회를 시도한 유저의 아이디
     const dbModels = global.DB_MODELS;
-    const meetingId = req.params.meetingId;
+    const meetingId = req.params._meetingId;
+    console.log(meetingId)
     try {
-        const surveys = await dbModels.Survey.find({ meetingId }).select({ title: 1, description: 1, createdAt: 1 });
+        // const surveys = await dbModels.Survey.find({ meetingId }).select({ title: 1, description: 1, createdAt: 1 });
+        // console.log(userId)
+        const surveys = await dbModels.Survey.aggregate([
+            {
+                $match: { meetingId: new ObjectId(meetingId) }
+            },
+            {
+                $lookup: {
+                    from: "survey_results",
+                    localField: "_id",
+                    foreignField: "survey_id",
+                    as: 'results'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    title: 1,
+                    description: 1,
+                    createdAt: 1,
+                    userId: 1,
+                    participated: {
+                        $anyElementTrue: {
+                            $map: {
+                                input: "$results",
+                                as: "result",
+                                in: { $eq: ["$$result.user_id", new ObjectId(userId)] }
+                            }
+                        }
+                    }
+                }
+            }
+        ])
 
         res.status(200).json(surveys);
     } catch (err) {

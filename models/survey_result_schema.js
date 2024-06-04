@@ -7,6 +7,9 @@ const survey_result_Schema = new Schema({
     },
     result: {
         type: mongoose.Schema.Types.Mixed
+    },
+    user_id: {
+        type: mongoose.Schema.Types.ObjectId
     }
 })
 
