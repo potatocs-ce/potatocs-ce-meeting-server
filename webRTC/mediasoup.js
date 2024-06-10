@@ -88,7 +88,7 @@ module.exports = function (io, socket, app) {
 
         // 소켓에 조인 시도
         socket.join(room_id)
-        socket.to(socket.room_id).emit('user_join', { room_id: socket.room_id, user_id: socket.user_id })
+
         // 데이터베이스 업데이트
         const dbModels = global.DB_MODELS;
 
@@ -108,6 +108,8 @@ module.exports = function (io, socket, app) {
 
 
         cb(roomList.get(room_id).toJson())
+
+        socket.to(socket.room_id).emit('user_join', { room_id: socket.room_id, user_id: socket.user_id })
     })
 
     // 새로 들어온 멤버에게 연결 정보 제공
