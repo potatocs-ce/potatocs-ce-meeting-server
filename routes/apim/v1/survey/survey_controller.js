@@ -43,13 +43,15 @@ exports.addSurvey = async (req, res) => {
     `)
     // 로그인한 사용자의 id
     const { _id } = req.decoded
-
+    const userId = req.decoded._id; // 조회를 시도한 유저의 아이디
 
     const dbModels = global.DB_MODELS;
     const body = req.body;
     body.userId = _id;
     try {
         await dbModels.Survey(body).save();
+
+
         res.status(200).json({ status: true })
     } catch (err) {
         console.log("[ ERROR ]", err);
