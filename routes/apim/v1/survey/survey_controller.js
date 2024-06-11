@@ -54,8 +54,9 @@ exports.addSurvey = async (req, res) => {
 
         res.status(200).json({ status: true })
     } catch (err) {
-        console.log("[ ERROR ]", err);
+        console.error("[ ERROR ]", err);
         res.status(500).send({
+            status: false,
             message: "An error occured while adding survey"
         })
     }
