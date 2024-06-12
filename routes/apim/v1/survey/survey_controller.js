@@ -22,6 +22,7 @@ exports.survey = async (req, res) => {
     } catch (err) {
         console.log('[ERROR]', err);
         res.status(500).send({
+            status: false,
             message: "An error occured while survey"
         })
     }
@@ -92,6 +93,7 @@ exports.deleteSurvey = async (req, res) => {
     } catch (err) {
         console.log("[ ERROR ]", err);
         return res.status(500).send({
+            status: false,
             message: "An error occured while getting survey"
         })
     }
@@ -125,6 +127,7 @@ exports.editSurvey = async (req, res) => {
     } catch (err) {
         console.log("[ ERROR ]", err);
         return res.status(500).send({
+            status: false,
             message: "An error occured while getting survey"
         })
     }
