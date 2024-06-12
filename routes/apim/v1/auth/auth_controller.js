@@ -12,7 +12,7 @@ exports.signIn = async (req, res) => {
   API  : SignIn
   router.post('signIn', authController.signIn) 
 --------------------------------------------------`);
-    console.log(req.body);
+
 
     try {
 
@@ -24,7 +24,7 @@ exports.signIn = async (req, res) => {
 
         if (!user) {
             // console.log('No Matched Account');
-            return res.status(404).send({
+            return res.status(404).json({
                 message: 'not found'
             });
         }

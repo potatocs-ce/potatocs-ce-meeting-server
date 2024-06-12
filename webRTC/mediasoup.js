@@ -279,6 +279,21 @@ module.exports = function (io, socket, app) {
             roomList.delete(socket.room_id)
         }
 
+
+        await dbModels.Meeting.findOneAndUpdate(
+            {
+                _id: room_id, // meetingId
+                'currentMembers.member_id': user_id, // userId
+            },
+            {
+                $set: {
+                    'currentMembers.$.online': false
+                }
+            },
+            {
+                new: true
+            })
+
         socket.to(socket.room_id).emit('user_exit', { room_id: socket.room_id, user_id: socket.user_id })
 
         socket.room_id = null

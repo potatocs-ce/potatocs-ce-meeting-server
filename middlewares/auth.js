@@ -8,7 +8,7 @@ exports.isAuthenticated = (req, res, next) => {
 
     // 토큰 미존재: 로그인하지 않은 사용자
     if (!token) {
-        return res.status(403).send({ error: true, message: '토큰이 존재하지 않습니다' });
+        return res.status(401).send({ error: true, message: '토큰이 존재하지 않습니다' });
     }
 
     // Bearer 부분 추출
