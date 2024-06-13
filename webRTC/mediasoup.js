@@ -192,7 +192,7 @@ module.exports = function (io, socket, app) {
 
     // 수신
     socket.on('consume', async ({ consumerTransportId, producerId, rtpCapabilities, producer_socket_id }, callback) => {
-        let { params, name } = await roomList.get(socket.room_id).consume(socket.id, consumerTransportId, producerId, rtpCapabilities, producer_socket_id)
+        let { params, name, screen } = await roomList.get(socket.room_id).consume(socket.id, consumerTransportId, producerId, rtpCapabilities, producer_socket_id)
         console.log(await roomList.get(socket.room_id).consume(socket.id, consumerTransportId, producerId, rtpCapabilities, producer_socket_id))
 
         console.log('Consuming', {
@@ -206,7 +206,7 @@ module.exports = function (io, socket, app) {
 
         const my_name = await global.DB_MODELS.Member.findOne({ _id: name }).select('name')
 
-        callback({ params, user_id: name, name: my_name.name })
+        callback({ params, user_id: name, name: my_name.name, screen })
     })
 
     // 이건 뭐지....

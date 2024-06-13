@@ -125,7 +125,7 @@ module.exports = class Room {
             }.bind(this)
         )
 
-        return { params, name: this.peers.get(producer_socket_id).name }
+        return { params, name: this.peers.get(producer_socket_id).name, screen: this.peers.get(producer_socket_id).screen }
     }
 
     async removePeer(socket_id) {
