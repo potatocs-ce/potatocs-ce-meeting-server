@@ -35,7 +35,7 @@ module.exports = class Peer {
             rtpParameters
         })
 
-        producer.screen = false
+        producer.screen = screen;
 
         this.producers.set(producer.id, producer)
 

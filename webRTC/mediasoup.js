@@ -109,7 +109,7 @@ module.exports = function (io, socket, app) {
 
         cb(roomList.get(room_id).toJson())
 
-        socket.to(socket.room_id).emit('user_join', { room_id: socket.room_id, user_id: socket.user_id })
+        socket.to(socket.room_id).emit('user_join', { room_id: socket.room_id, user_id: socket.user_id, name })
     })
 
     // 새로 들어온 멤버에게 연결 정보 제공
@@ -201,9 +201,9 @@ module.exports = function (io, socket, app) {
             producer_id: `${producerId}`,
             consumer_id: `${params.id}`,
             encodings: params.rtpParameters,
-
+            screen
         })
-
+        console.log(roomList.get(socket.room_id).getPeers().get(socket.id).screen);
         const my_name = await global.DB_MODELS.Member.findOne({ _id: name }).select('name')
 
         callback({ params, user_id: name, name: my_name.name, screen })

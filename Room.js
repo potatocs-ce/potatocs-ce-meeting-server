@@ -78,6 +78,7 @@ module.exports = class Room {
     }
 
     async produce(socket_id, producerTransportId, rtpParameters, kind, screen) {
+
         return new Promise(
             async function (resolve, reject) {
                 // console.log(screen)
@@ -125,7 +126,7 @@ module.exports = class Room {
             }.bind(this)
         )
 
-        return { params, name: this.peers.get(producer_socket_id).name, screen: this.peers.get(producer_socket_id).screen }
+        return { params, name: this.peers.get(producer_socket_id).name, screen: this.peers.get(producer_socket_id).producers.get(producer_id).screen }
     }
 
     async removePeer(socket_id) {
