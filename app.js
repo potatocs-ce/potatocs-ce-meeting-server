@@ -19,9 +19,8 @@ const options = {
 }
 
 
-app.use(express.static(path.join(__dirname, './dist/angular_mediasoup2/browser')))
 
-const allowedOrigins = ['http://localhost:4200', 'http://localhost:4300', 'http://192.168.0.5:4200', 'http://192.168.0.5:4300', 'http://192.168.0.42:4200', 'http://192.168.0.42:4300', 'https://buildingtalks.com'];
+const allowedOrigins = ['http://localhost:4200', 'https://localhost:4200', 'http://localhost:4300', 'http://192.168.0.5:4200', 'http://192.168.0.5:4300', 'http://192.168.0.42:4200', 'http://192.168.0.42:4300', 'https://buildingtalks.com', 'https://test-potatocs-lb.com', 'http://test-potatocs-lb.com'];
 
 app.use(cors({
     origin: allowedOrigins,
@@ -49,7 +48,7 @@ const mongApp = require('./database/mongoDB');
 
 
 const httpsServer = https.createServer(options, app)
-httpsServer.listen(3000, '0.0.0.0', () => {
+httpsServer.listen(3300, '0.0.0.0', () => {
     console.log('Listening on https://' + config.listenIp + ':' + config.listenPort)
 
     /*----------------------------------
@@ -80,3 +79,25 @@ io.on('connection', (socket) => {
     socket_survey(io, socket, app);
 })
 
+/*
+  localhost:3000/meeting/meetingId
+  와 같이
+  app.use('/', 와 다른 경로 일 경우
+  여기로 받은 후 angular로 보낸다.  
+*/
+/*---------------------------------------------------------
+    서버상에 존재하지 않는 주소를 넣는 경우에 대한 처리
+        - angular route의 path로 바로 이동하는 경우
+   여기를 통해서 진입.
+  --> 나중에 처리. : nginx 등을 이용하는 경우 다르게 처리...
+-------------------------------------------------------------*/
+// app.use(function (req, res) {
+//     console.log(`
+//     ============================================
+//       >>>>>> Invalid Request! <<<<<<
+    
+//       Req: "${req.url}"
+//         => Redirect to 'index.html'
+//     ============================================`)
+//     res.sendFile(__dirname + './dist/angular_mediasoup2/browser');
+// });

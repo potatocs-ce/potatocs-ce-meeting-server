@@ -173,7 +173,7 @@ module.exports = function (io, socket, app) {
             return callback({ error: 'not is a room' })
         }
 
-        console.log(kind, rtpParameters, producerTransportId)
+        // console.log(kind, rtpParameters, producerTransportId)
         let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind, screen);
         // console.log(socket.room_id, socket.)
         console.log('Produce', {
@@ -279,7 +279,7 @@ module.exports = function (io, socket, app) {
             roomList.delete(socket.room_id)
         }
 
-
+        const dbModels = global.DB_MODELS;
         await dbModels.Meeting.findOneAndUpdate(
             {
                 _id: room_id, // meetingId
