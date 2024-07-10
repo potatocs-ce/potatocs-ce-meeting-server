@@ -282,8 +282,8 @@ module.exports = function (io, socket, app) {
         const dbModels = global.DB_MODELS;
         await dbModels.Meeting.findOneAndUpdate(
             {
-                _id: room_id, // meetingId
-                'currentMembers.member_id': user_id, // userId
+                _id: socket.room_id, // meetingId
+                'currentMembers.member_id': socket.user_id, // userId
             },
             {
                 $set: {
