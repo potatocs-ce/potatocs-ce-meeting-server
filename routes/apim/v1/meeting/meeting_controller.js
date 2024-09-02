@@ -1,4 +1,14 @@
 var mongoose = require('mongoose');
+const { GetObjectCommand, S3Client, DeleteObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
+const s3Client = new S3Client({
+    region: process.env.AWS_REGION,
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    }
+});
+
+
 
 exports.meetingInfo = async (req, res) => {
     console.log(`
@@ -91,7 +101,7 @@ exports.getChat = async (req, res) => {
         }
 
         // 원하는 값만 query 하기 공백으로 구분
-        const MeetingChat = await dbModels.MeetingChat.find(criteria).select('userId chatMember createdAt chatContent');
+        const MeetingChat = await dbModels.MeetingChat.find(criteria).select('userId chatMember createdAt chatContent images');
 
         if (!MeetingChat) {
             return res.status(400).send('invalid meeting chat');
@@ -204,19 +214,53 @@ exports.createChat = async (req, res) => {
       API  : Create a chat
       router.post('/createChat', MeetingContollder.createChat);
     --------------------------------------------------`);
-    // console.log('[[createChat]] >>>>>> ', req.body)
+    console.log('[[createChat]] >>>>>> ', req.body)
 
+
+    // console.log(req.files)
+    // db 사용
     const dbModels = global.DB_MODELS;
 
+    // user 이름 불러오기
     const user_name = await dbModels.Member.findOne({ _id: req.body.userId }).select('name');
 
-
+    // criteria 
     try {
+
+
+        // s3에 처리하고 넘어온 이미지 데이터들 담아둘 변수
+        const image_buffer = [];
+        // 넘어온 이미지 데이터들을 반복하면서 처리해줌
+        await Promise.all(req?.files?.map(async (image, index) => {
+
+            const key = 'chat_images/' + Date.now().toString() + image.originalname;
+            // 여기 s3 처리... 
+            const command = new PutObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET,
+                Key: key,
+                Body: image.buffer
+            });
+
+            try {
+                const response = await s3Client.send(command);
+
+                const data = JSON.parse(req.body.strings[index]);
+                console.log('쉬바', data)
+                delete data.dataURL;
+                image_buffer.push({ ...data, key })
+            } catch (err) {
+                console.error(err);
+            }
+        }))
+
+
+
         const criteria = {
             meetingId: req.body.meetingId,
             userId: req.body.userId,
             chatMember: user_name.name,
-            chatContent: req.body.chatContent
+            chatContent: req.body.chatContent,
+            images: image_buffer
         }
 
         const Meeting = dbModels.MeetingChat(criteria);
@@ -228,10 +272,35 @@ exports.createChat = async (req, res) => {
         )
 
     } catch (err) {
-
+        console.log(err)
         return res.status(500).send({
             message: 'creatintg a meeting chat had an error'
         });
 
+    }
+}
+
+
+exports.getImage = async (req, res) => {
+    console.log(`
+    --------------------------------------------------
+    router.post('/:key', meetingController.getImage);
+    --------------------------------------------------
+        `)
+
+    const key = req.params.key;
+    console.log('====================================================================')
+    console.log(key)
+    try {
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: 'chat_images/' + key
+        })
+
+        const response = await s3Client.send(command);
+        response.Body.pipe(res);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send('internal server error');
     }
 }

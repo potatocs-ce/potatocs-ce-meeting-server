@@ -20,7 +20,7 @@ const options = {
 
 
 
-const allowedOrigins = ['http://localhost:4200', 'https://localhost:4200', 'http://localhost:4300', 'http://192.168.0.5:4200', 'http://192.168.0.5:4300', 'http://192.168.0.42:4200', 'http://192.168.0.42:4300', 'https://buildingtalks.com', 'https://test-potatocs-lb.com', 'http://test-potatocs-lb.com'];
+const allowedOrigins = ['http://localhost:4200', 'https://localhost:4200','http://localhost:4202','https://localhost:4202', 'http://localhost:4300', 'http://192.168.0.5:4200', 'http://192.168.0.5:4300', 'http://192.168.0.42:4200', 'http://192.168.0.42:4300', 'https://buildingtalks.com', 'https://test-potatocs-lb.com', 'http://test-potatocs-lb.com'];
 
 app.use(cors({
     origin: allowedOrigins,
@@ -40,7 +40,7 @@ if (process.env.NODE_ENV.trim() == 'production') {
     require('dotenv').config({ path: path.join(__dirname, '/env/dev.env') });
 }
 
-app.use('/apim/v1', require('./routes/apim/v1'));
+app.use('/room/apim/v1', require('./routes/apim/v1'));
 /* -----------------------------------------
     DB
 ----------------------------------------- */
@@ -62,7 +62,7 @@ const io = new Server(httpsServer, {
     cors: {
         origin: "*"
     },
-    path: '/socket/'
+    path: '/room/socket/'
 })
 
 
