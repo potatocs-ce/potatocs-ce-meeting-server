@@ -29,6 +29,8 @@ module.exports = {
         worker: {
             rtcMinPort: 40000,
             rtcMaxPort: 49999,
+            // Worker 당 최대 처리량 설정
+            maxWorkerLoad: 70,  // 70% CPU 사용률 제한
             logLevel: 'warn',
             logTags: [
                 'info',
@@ -58,7 +60,19 @@ module.exports = {
                     mimeType: 'video/VP8',
                     clockRate: 90000,
                     parameters: {
-                        'x-google-start-bitrate': 1000
+                        'x-google-start-bitrate': '1000',
+                        // 'x-google-max-bitrate': 500,
+                    }
+                },
+                {
+                    kind: 'video',
+                    mimeType: 'video/H264',
+                    clockRate: 90000,
+                    parameters: {
+                        'packetization-mode': 1,
+                        'profile-level-id': '42e01f',
+                        'level-asymmetry-allowed': 1,
+                        'x-google-start-bitrate': '1000'
                     }
                 }
             ]
@@ -71,8 +85,10 @@ module.exports = {
                     announcedIp: getLocalIp() // replace by public IP address
                 }
             ],
-            maxIncomingBitrate: 1500000,
-            initialAvailableOutgoingBitrate: 1000000
+            initialAvailableOutgoingBitrate: 800000, // 초기 가용 비트레이트
+            minimumAvailableOutgoingBitrate: 300000, // 최소 비트레이트
+            maxIncomingBitrate: 1500000, // 최대 수신 비트레이트
+            maxOutgoingBitrate: 1000000  // 최대 송신 비트레이트
         }
     }
 }

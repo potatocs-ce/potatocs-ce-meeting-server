@@ -39,15 +39,59 @@ module.exports = class Room {
         return this.router.rtpCapabilities
     }
 
+
+    // Worker 부하 확인
+    async getWorkerLoad() {
+        try {
+            // 성능 최적화: 1초 이내 재요청시 캐시된 값 반환
+            const now = Date.now();
+            if (this.cachedUsage && (now - this.lastUsageCheck) < 1000) {
+                return this.cachedUsage;
+            }
+
+            const usage = await this.worker.getResourceUsage();
+
+            // CPU 사용률 계산 (백분율)
+            const cpuUsage = usage.cpu / 100;
+
+            // 메모리 사용률 계산 (백분율)
+            const memoryUsage = (usage.mem.heapUsed / usage.mem.heapTotal) * 100;
+
+            // Worker의 전반적인 부하 계산 (CPU와 메모리 사용률의 가중 평균)
+            const workerLoad = (cpuUsage * 0.7) + (memoryUsage * 0.3);
+
+            // 결과 캐시
+            this.cachedUsage = workerLoad;
+            this.lastUsageCheck = now;
+
+            return workerLoad;
+        } catch (error) {
+            console.error('Worker load check failed:', error);
+            return 0; // 에러 발생 시 기본값 반환
+        }
+    }
+
+
     async createWebRtcTransport(socket_id) {
         const { maxIncomingBitrate, initialAvailableOutgoingBitrate } = config.mediasoup.webRtcTransport
+
+
+        // Worker 부하 확인
+        const workerLoad = await this.getWorkerLoad();
+        if (workerLoad > config.mediasoup.worker.maxWorkerLoad) {
+            throw new Error('Server is currently overloaded');
+        }
+
 
         const transport = await this.router.createWebRtcTransport({
             listenIps: config.mediasoup.webRtcTransport.listenIps,
             enableUdp: true,
             enableTcp: true,
             preferUdp: true,
-            initialAvailableOutgoingBitrate
+            initialAvailableOutgoingBitrate,
+            minimumAvailableOutgoingBitrate: config.mediasoup.webRtcTransport.minimumAvailableOutgoingBitrate,
+            maxIncomingBitrate,
+            maxOutgoingBitrate: config.mediasoup.webRtcTransport.maxOutgoingBitrate
         })
         if (maxIncomingBitrate) {
             try {
@@ -61,6 +105,15 @@ module.exports = class Room {
 
         console.log("Adding transport", { transportId: transport.id })
         this.peers.get(socket_id).addTransport(transport)
+
+
+        // 네트워크 상태 모니터링
+        transport.on('icestatechange', (iceState) => {
+            if (iceState === 'disconnected') {
+                this.handleTransportDisconnection(transport, socket_id);
+            }
+        });
+
         return {
             params: {
                 id: transport.id,

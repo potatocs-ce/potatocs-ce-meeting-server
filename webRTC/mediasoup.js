@@ -31,9 +31,8 @@ let workers = [];
 
 
 async function createWorkers() {
+    const numWorkers = config.mediasoup.numWorkers;
 
-
-    let { numWorkers } = config.mediasoup;
 
     for (let i = 0; i < numWorkers; i++) {
         let worker = await mediasoup.createWorker({
@@ -47,13 +46,39 @@ async function createWorkers() {
         })
 
         worker.on('died', () => {
-            console.error('mediasoup worker died, exiting in 2 seconds... [pid:%d]', worker.pid)
-            setTimeout(() => process.exit(1), 2000)
+            console.error(`Worker died unexpectedly [pid:${worker.pid}]`);
+            setupWorkerRecovery(worker);
         })
+
+        // Worker 리소스 사용량 모니터링
+        setInterval(async () => {
+            const usage = await worker.getResourceUsage();
+            if (usage.cpu > config.mediasoup.worker.maxWorkerLoad) {
+                handleWorkerOverload(worker);
+            }
+        }, 5000);
+
         workers.push(worker)
     }
 }
+// Worker 과부하 처리
+function handleWorkerOverload(worker) {
+    // 새로운 연결 거부
+    worker.overloaded = true;
 
+    // 기존 연결 품질 저하
+    const rooms = getRoomsForWorker(worker);
+    rooms.forEach(room => {
+        room.peers.forEach(peer => {
+            peer.producers.forEach(producer => {
+                if (producer.kind === 'video') {
+                    producer.pause();
+                    setTimeout(() => producer.resume(), 5000); // 5초 후 재시도
+                }
+            });
+        });
+    });
+}
 module.exports = function (io, socket, app) {
     socket.on('createRoom', async ({ room_id }, callback) => {
         if (roomList.has(room_id)) {

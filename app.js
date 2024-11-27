@@ -60,9 +60,10 @@ httpsServer.listen(3300, '0.0.0.0', () => {
 
 const io = new Server(httpsServer, {
     cors: {
-        origin: "*"
+        origin: "*",
+        credentials: true,
     },
-    path: '/room/socket/'
+    path: '/socket/'
 })
 
 
@@ -71,12 +72,14 @@ const socket_mediasoup = require('./webRTC/mediasoup.js');
 const socket_drawing = require('./webRTC/drawing.js');
 const socket_chat = require('./webRTC/chat.js');
 const socket_survey = require('./webRTC/survey.js');
+const socket_doc = require('./webRTC/doc.js');
 
 io.on('connection', (socket) => {
     socket_mediasoup(io, socket, app);
     socket_drawing(io, socket, app);
     socket_chat(io, socket, app);
     socket_survey(io, socket, app);
+    socket_doc(io, socket, app);
 })
 
 /*
