@@ -1,39 +1,15 @@
 const router = require('express').Router();
 
-// const { isAuthenticated } = require('../../../middlewares/auth');
-
 const auth = require('./auth/auth_index');
-// const user = require('./user/user_index');
-// const leave = require('./leave/leave_index');
-const collab = require('./collab/collab_index');
-
-const whiteBoard = require('./whiteBoard/whiteBoard_index');
-
-/*-----------------------------------
-	not needed to verify
------------------------------------*/
+const meeting = require('./meeting/meeting_index');
+const doc = require('./doc/doc_index')
+const survey = require('./survey/survey_index');
+const { isAuthenticated } = require('../../../middlewares/auth')
 router.use('/auth', auth);
 
-/*-----------------------------------
-	Token verify
------------------------------------*/
-// router.use(isAuthenticated);
-
-/*-----------------------------------
-	API
------------------------------------*/
-// router.use('/user', user);
-// router.use('/leave', leave);
-router.use('/collab', collab);
-
-
-/*-----------------------------------
-	white Board
------------------------------------*/
-router.use('/whiteBoard', whiteBoard);
-
-
-
-
+router.use(isAuthenticated);
+router.use('/meeting', meeting);
+router.use('/doc', doc);
+router.use('/survey', survey);
 
 module.exports = router;

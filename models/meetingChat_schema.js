@@ -8,14 +8,15 @@ const meetingChatScehma = mongoose.Schema(
 		},
 		userId: {
 			type: mongoose.Schema.Types.ObjectId,
-            ref: 'Member',
+			ref: 'Member',
 		},
-        chatMember: {
-            type: String,
-        },
+		chatMember: {
+			type: String,
+		},
 		chatContent: {
 			type: String,
-		},     
+		},
+		images: []
 	},
 	{
 		timestamps: true
