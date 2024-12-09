@@ -14,7 +14,7 @@ exports.getPendingList = async (req, res) => {
 	try {
 		const pendingList = await dbModels.Manager.aggregate([
 			{
-				$match: { 
+				$match: {
 					myManager: ObjectId(req.decoded._id),
 					accepted: false
 				}
@@ -50,7 +50,7 @@ exports.getPendingList = async (req, res) => {
 			message: 'found',
 			pendingList
 		});
-		
+
 	} catch (err) {
 		return res.status(500).send({
 			message: 'DB Error'
@@ -97,7 +97,7 @@ exports.acceptRequest = async (req, res) => {
 	query: ${JSON.stringify(req.body)} docId, userId
 --------------------------------------------------`);
 
- 	const dbModels = global.DB_MODELS;
+	const dbModels = global.DB_MODELS;
 
 	try {
 
@@ -111,12 +111,12 @@ exports.acceptRequest = async (req, res) => {
 		}
 
 		const updatedData = await dbModels.Manager.findOneAndUpdate(updateCriteria, updateData);
-		if(!updatedData){
+		if (!updatedData) {
 			return res.status(404).send('the update has failed');
 		}
 
-		
-		console.log(updatedData);
+
+		// console.log(updatedData);
 
 		const criteria = {
 			_id: req.decoded._id
@@ -127,7 +127,7 @@ exports.acceptRequest = async (req, res) => {
 		}
 
 		const updatedUser = await dbModels.Member.findOneAndUpdate(criteria, updateManagerData);
-		if(!updatedUser){
+		if (!updatedUser) {
 			return res.status(404).send('the user update has failed');
 		}
 
@@ -154,13 +154,13 @@ exports.myEmployeeList = async (req, res) => {
 	const dbModels = global.DB_MODELS;
 
 	try {
-		
+
 		// 관리하고 있는 직원들 in manager
 		// myManager > 매니저 아이디, myId > 직원 아이디, accepted: true or false, 펜딩 or 수락
 
 		const myEmployeeList = await dbModels.Manager.aggregate([
 			{
-				$match: { 
+				$match: {
 					myManager: ObjectId(req.decoded._id),
 					accepted: true
 				}
@@ -178,7 +178,7 @@ exports.myEmployeeList = async (req, res) => {
 					path: '$myEmployeeInfo',
 					preserveNullAndEmptyArrays: true
 				}
-			},			
+			},
 			{
 				$project: {
 					_id: 1,
@@ -195,7 +195,7 @@ exports.myEmployeeList = async (req, res) => {
 			}
 		]);
 
-		console.log(myEmployeeList);
+		// console.log(myEmployeeList);
 
 		return res.status(200).send({
 			message: 'found',
@@ -225,12 +225,12 @@ exports.getEmployeeInfo = async (req, res) => {
 		const criteria = {
 			_id: req.params.id
 		}
-	
+
 		const projection = 'name position location emp_start_date emp_end_date annual_leave sick_leave replacementday_leave';
 
 		const employee = await dbModels.Member.findOne(criteria, projection);
 		// console.log(employee);
-		if(!employee) {
+		if (!employee) {
 			return res.status(400).send({
 				message: 'Cannot find the manager'
 			});
@@ -278,7 +278,7 @@ exports.UpdateEmployeeInfo = async (req, res) => {
 
 		const employee = await dbModels.Member.findOneAndUpdate(criteria, updateData);
 
-		if(!employee) {
+		if (!employee) {
 			return res.status(400).send({
 				message: 'Cannot find the manager'
 			});

@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 /*-----------------------------------
-	Contollers
+    Contollers
 -----------------------------------*/
 
 const meetingController = require('./meeting/meeting_controller')

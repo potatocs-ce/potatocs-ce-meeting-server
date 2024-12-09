@@ -79,11 +79,11 @@ exports.approvedLeaveRequest = async (req, res) => {
 		const updateData = {
 			status: 'approve'
 		}
-		
+
 		// 휴가 승인 업데이트
 		const updatedRequest = await dbModels.LeaveRequest.findOneAndUpdate(criteria, updateData);
 		// const updatedRequest = await dbModels.LeaveRequest.findOne(criteria);
-		if(!updatedRequest){
+		if (!updatedRequest) {
 			return res.status(404).send('the update1 has failed');
 		}
 
@@ -92,22 +92,22 @@ exports.approvedLeaveRequest = async (req, res) => {
 			_id: updatedRequest.requestor
 		}
 		const requestorInfo = await dbModels.Member.findOne(findRequestor);
-		if(!updatedRequest){
+		if (!updatedRequest) {
 			return res.status(404).send('the update2 has failed');
 		}
 		// console.log('leftLeave before >>', requestorInfo);
 		// 처리과정
-		const leftLeave = requestorInfo[updatedRequest.leaveType]-updatedRequest.leaveDuration
-		
-		if(updatedRequest.leaveType == 'annual_leave') {
+		const leftLeave = requestorInfo[updatedRequest.leaveType] - updatedRequest.leaveDuration
+
+		if (updatedRequest.leaveType == 'annual_leave') {
 			updateRequestorLeave = {
 				annual_leave: leftLeave
 			}
-		}else if(updatedRequest.leaveType == 'sick_leave') {
+		} else if (updatedRequest.leaveType == 'sick_leave') {
 			updateRequestorLeave = {
 				sick_leave: leftLeave
 			}
-		}else if(updatedRequest.leaveType == 'replacementday_leave') {
+		} else if (updatedRequest.leaveType == 'replacementday_leave') {
 			updateRequestorLeave = {
 				replacementday_leave: leftLeave
 			}
@@ -115,7 +115,7 @@ exports.approvedLeaveRequest = async (req, res) => {
 
 		// 처리후 업데이트
 		const updateRequestorInfo = await dbModels.Member.findOneAndUpdate(findRequestor, updateRequestorLeave);
-		if(!updateRequestorInfo){
+		if (!updateRequestorInfo) {
 			return res.status(404).send('the update3 has failed');
 		}
 
@@ -127,7 +127,7 @@ exports.approvedLeaveRequest = async (req, res) => {
 		}
 		const usedLeaveRes = dbModels.UsedLeave(usedLeaveData);
 		await usedLeaveRes.save();
-		if(!usedLeaveRes){
+		if (!usedLeaveRes) {
 			return res.status(404).send('the update4 has failed');
 		}
 

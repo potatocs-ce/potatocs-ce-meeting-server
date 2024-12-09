@@ -1,63 +1,65 @@
-const member = require('../../../../../models/member_schema');
-const manager = require('../../../../../models/manager_schema');
+const member = require("../../../../../models/member_schema");
+const manager = require("../../../../../models/manager_schema");
 
 exports.getManager = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
   User : ${req.decoded._id}
   API  : Get Manager Info
   router.get('/get-manager', managerMngmtCtrl.getManager);
   
 --------------------------------------------------`);
-	try {
-		const criteria = {
-			myId: req.decoded._id
-		}
+  try {
+    const criteria = {
+      myId: req.decoded._id,
+    };
 
-		const projection = 'myManager myId accepted';
+    const projection = "myManager myId accepted";
 
-		const requestedManager = await manager.findOne(criteria, projection);
-		// console.log('requested findManager', requestedManager);
+    const requestedManager = await manager.findOne(criteria, projection);
+    // console.log('requested findManager', requestedManager);
 
-		if(!requestedManager) {
-			return res.status(200).send({
-				message: 'findManager'
-			});
-		}
+    if (!requestedManager) {
+      return res.status(200).send({
+        message: "findManager",
+      });
+    }
 
-		const managerCriteria = {
-			_id: requestedManager.myManager
-		};
+    const managerCriteria = {
+      _id: requestedManager.myManager,
+    };
 
-		const managerProjection = 'email name isManager profile_img';
-		
-		const managerInfo = await member.findOne(managerCriteria, managerProjection);
-		// console.log('managerInfo', managerInfo);
+    const managerProjection = "email name isManager profile_img";
 
-		const getManager = {
-			_id: requestedManager._id,
-			accepted: requestedManager.accepted,
-			email: managerInfo.email,
-			name: managerInfo.name,
-			profile_img: managerInfo.profile_img,
-		}
-		// console.log(returnData);
+    const managerInfo = await member.findOne(
+      managerCriteria,
+      managerProjection
+    );
+    // console.log('managerInfo', managerInfo);
 
-		return res.status(200).send({
-			message: 'get Manager test',
-			getManager
-		})
+    const getManager = {
+      _id: requestedManager._id,
+      accepted: requestedManager.accepted,
+      email: managerInfo.email,
+      name: managerInfo.name,
+      profile_img: managerInfo.profile_img,
+    };
+    // console.log(returnData);
 
-	} catch (err) {
-		// console.log(err);
-		return res.status(500).send({
-			message: 'DB Error'
-		});
-	}
+    return res.status(200).send({
+      message: "get Manager test",
+      getManager,
+    });
+  } catch (err) {
+    // console.log(err);
+    return res.status(500).send({
+      message: "DB Error",
+    });
+  }
 };
 
 exports.findManager = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
   User : ${req.decoded._id}
   API  : Find My Manager
@@ -66,36 +68,31 @@ exports.findManager = async (req, res) => {
   manager_email_id : ${req.params.id}
 --------------------------------------------------`);
 
-	try {
+  try {
+    const criteria = {
+      email: req.params.id,
+    };
 
-		const criteria = {
-			email: req.params.id
-		}
-	
-		const projection = 'email name profile_img mobile department';
+    const projection = "email name profile_img mobile department";
 
-		const user = await member.findOne(criteria, projection);
-		// console.log(user);
-		if(!user) {
-			return res.status(400).send({
-				message: 'Cannot find the manager'
-			});
-		}
+    const user = await member.findOne(criteria, projection);
+    // console.log(user);
+    if (!user) {
+      return res.status(400).send({
+        message: "Cannot find the manager",
+      });
+    }
 
-		return res.status(200).send({
-			user
-		});
-
-	} catch (err) {
-
-		return res.status(500).send('DB Error');
-
-	}
-	
+    return res.status(200).send({
+      user,
+    });
+  } catch (err) {
+    return res.status(500).send("DB Error");
+  }
 };
 
 exports.addManager = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
 	User : ${req.decoded._id}
 	API  : Add Manager
@@ -104,37 +101,33 @@ exports.addManager = async (req, res) => {
 	manager_id : ${req.body.manager_id}
 --------------------------------------------------`);
 
-	try {
-		
-		const newManager = manager({
-			myManager: req.body.manager_id,
-			myId: req.decoded._id,
-			accepted: false,
-			requestedDate: new Date()
-		});
-	
-		await newManager.save();
+  try {
+    const newManager = manager({
+      myManager: req.body.manager_id,
+      myId: req.decoded._id,
+      accepted: false,
+      requestedDate: new Date(),
+    });
 
-		res.send({
-			message: 'requested'
-		});
+    await newManager.save();
 
-
-	} catch (err) {
-		// console.log(err);
-		return res.status(500).send({
-			message: 'DB Error'
-		});
-	}
-
+    res.send({
+      message: "requested",
+    });
+  } catch (err) {
+    // console.log(err);
+    return res.status(500).send({
+      message: "DB Error",
+    });
+  }
 };
 
 /*
-	manager_schema 안에 데이터가 있을 때
-	accepted => false = 펜딩중 true = 수락 후 매니저/직원 관계
+  manager_schema 안에 데이터가 있을 때
+  accepted => false = 펜딩중 true = 수락 후 매니저/직원 관계
 */
 exports.cancelPending = async (req, res) => {
-	console.log(`
+  console.log(`
 --------------------------------------------------
 	User : ${req.decoded._id}
 	API  : Cancel addManager Pending
@@ -143,22 +136,19 @@ exports.cancelPending = async (req, res) => {
 	manager_id : ${req.params.id}
 --------------------------------------------------`);
 
-	try {
+  try {
+    const criteria = {
+      _id: req.params.id,
+    };
 
-		const criteria = {
-			_id: req.params.id
-		}
+    await manager.deleteOne(criteria);
 
-		await manager.deleteOne(criteria);
-
-		return res.status(200).send({
-			message: 'canceled'
-		});
-
-	} catch (err) {
-		return res.status(500).send({
-			message: 'DB Error'
-		});
-	}
-
+    return res.status(200).send({
+      message: "canceled",
+    });
+  } catch (err) {
+    return res.status(500).send({
+      message: "DB Error",
+    });
+  }
 };

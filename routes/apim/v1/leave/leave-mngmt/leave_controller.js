@@ -9,7 +9,7 @@ exports.requestLeave = async (req, res) => {
 --------------------------------------------------`);
 
 	const dbModels = global.DB_MODELS;
-	
+
 	try {
 
 		const findMyManagerCriteria = {
@@ -32,7 +32,7 @@ exports.requestLeave = async (req, res) => {
 		return res.status(200).send({
 			message: 'requested'
 		});
-			
+
 	} catch (err) {
 		return res.status(500).send({
 			message: 'DB Error'
@@ -52,10 +52,10 @@ exports.getMyLeaveStatus = async (req, res) => {
 	// total >> used_leave + memeber_leave with a condition, leaveType
 	// used_leave 에 있는 사용된 휴가
 	// 현재 member에 있는 나의 휴가
-		const dbModels = global.DB_MODELS;
+	const dbModels = global.DB_MODELS;
 
 	try {
-		
+
 		const userLeaveStatus = await dbModels.Member.aggregate([
 			{
 				$match: {
@@ -77,7 +77,7 @@ exports.getMyLeaveStatus = async (req, res) => {
 				}
 			},
 		]);
-		
+
 		console.log(userLeaveStatus);
 
 
@@ -89,7 +89,7 @@ exports.getMyLeaveStatus = async (req, res) => {
 
 	}
 
-	return res.status(200).send({                                                                                     
+	return res.status(200).send({
 		message: 'my status test'
 	})
 };
