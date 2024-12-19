@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const meetingChatScehma = mongoose.Schema(
 	{
 		meetingId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Document',
+			ref: "Document",
 		},
 		userId: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Member',
+			ref: "Member",
 		},
 		chatMember: {
 			type: String,
@@ -16,15 +16,13 @@ const meetingChatScehma = mongoose.Schema(
 		chatContent: {
 			type: String,
 		},
-		images: []
+		images: [],
 	},
 	{
-		timestamps: true
+		timestamps: true,
 	}
 );
 
-const MeetingChat = mongoose.model('MeetingChat', meetingChatScehma);
+const MeetingChat = mongoose.model("MeetingChat", meetingChatScehma);
 
 module.exports = MeetingChat;
-
-
