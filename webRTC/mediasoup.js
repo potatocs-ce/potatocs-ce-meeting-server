@@ -69,7 +69,7 @@ function handleWorkerOverload(worker) {
 			peer.producers.forEach((producer) => {
 				if (producer.kind === "video") {
 					producer.pause();
-					setTimeout(() => producer.resume(), 3000); // 5초 후 재시도
+					setTimeout(() => producer.resume(), 5000); // 5초 후 재시도
 				}
 			});
 		});
@@ -160,6 +160,7 @@ module.exports = function (io, socket, app) {
 
 	// 연결 생성
 	socket.on("createWebRtcTransport", async (_, callback) => {
+		console.log(createWorkers);
 		console.log("Create webrtc transport", {
 			name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
 		});
