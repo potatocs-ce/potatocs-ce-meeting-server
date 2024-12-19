@@ -46,7 +46,6 @@ module.exports = class Room {
 		try {
 			// 성능 최적화: 1초 이내 재요청시 캐시된 값 반환
 			const now = Date.now();
-			console.log(now);
 			if (this.cachedUsage && now - this.lastUsageCheck < 1000) {
 				return this.cachedUsage;
 			}
