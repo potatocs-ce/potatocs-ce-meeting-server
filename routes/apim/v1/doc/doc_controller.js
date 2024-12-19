@@ -103,26 +103,33 @@ exports.getDocList = async (req, res) => {
 
 // 문서의 판서 정보를 요청하는 api
 exports.getDocDrawingList = async (req, res) => {
+	// API 호출 정보를 콘솔에 출력
 	console.log(`
     --------------------------------------------------
     router.post('/doc_drawing_list/:meetingId', docController.getDocDrawingList);
     --------------------------------------------------`);
+
+	// 글로벌 DB 모델 객체 가져오기
 	const dbModels = global.DB_MODELS;
 
+	// MongoDB Aggregation 파이프라인 설정
 	const pipeline = [
 		{
+			// 첫 번째 단계: 특정 회의(meetingId)에 해당하는 문서 데이터를 필터링
 			$match: {
-				meetingId: req.params.meetingId,
+				meetingId: req.params.meetingId, // URL 파라미터에서 meetingId 가져오기
 			},
 		},
 		{
+			// 두 번째 단계: 문서 ID(docId)별로 데이터를 그룹화
 			$group: {
-				_id: "$docId",
+				_id: "$docId", // 그룹화 기준: 문서 ID
 				drawings: {
+					// drawings 배열에 필요한 필드를 추가
 					$push: {
-						drawingEvent: "$drawingEvent",
-						page: "$page",
-						userId: "$userId",
+						drawingEvent: "$drawingEvent", // 드로잉 이벤트 정보
+						page: "$page", // 페이지 정보
+						userId: "$userId", // 사용자 ID 정보
 					},
 				},
 			},
@@ -130,11 +137,14 @@ exports.getDocDrawingList = async (req, res) => {
 	];
 
 	try {
+		// Aggregation 실행: 드로잉 데이터를 그룹화하여 가져옴
 		const result = await dbModels.DocDrawing.aggregate(pipeline);
 
+		// 결과를 클라이언트에 반환 (상태 코드 200)
 		return res.status(200).send(result);
 	} catch (err) {
-		console.error(err);
+		// 오류 발생 시 상태 코드 500과 메시지 반환
+		console.error(err); // 오류를 콘솔에 기록
 		return res.status(500).send("internal server error");
 	}
 };
