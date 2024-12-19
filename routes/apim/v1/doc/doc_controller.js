@@ -31,7 +31,7 @@ exports.createDoc = async (req, res) => {
 
 		// 데이터베이스에서 meetingId에 해당하는 회의 정보 조회
 		const result = await dbModels.Meeting.findOne({ _id: meetingId });
-
+		console.log(result);
 		// 회의 정보가 없는 경우 잘못된 요청으로 간주하고 상태 코드 400 반환
 		if (!result) {
 			return res.status(400).send("invalid meeting id");
