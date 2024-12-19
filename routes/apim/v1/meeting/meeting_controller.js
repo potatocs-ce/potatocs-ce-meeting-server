@@ -44,30 +44,41 @@ exports.meetingInfo = async (req, res) => {
 };
 
 exports.getParticipantState = async (req, res) => {
+	// API 호출 정보를 콘솔에 출력
 	console.log(`--------------------------------------------------
     API  : Get a role
     router.get('/getParticipantState', MeetingContollder.getParticipantState);
   --------------------------------------------------`);
 
+	// 요청받은 회의 ID를 로그에 출력 (디버깅용)
 	console.log("[[getParticipantState]] >>>>>> ", req.params.meetingId);
 
+	// 글로벌 DB 모델 객체 가져오기
 	const dbModels = global.DB_MODELS;
 
 	try {
+		// 조회 조건 설정
+		// 요청의 URL 파라미터(`meetingId`)에서 회의 ID를 가져와 조건으로 사용
 		const criteria = {
 			_id: req.params.meetingId,
 		};
 
+		// 데이터베이스에서 회의의 currentMembers 필드만 조회
 		const currentMembers = await dbModels.Meeting.find(criteria).select("currentMembers");
-		// console.log('[[ getParticipantState ]]', currentMembers)
+
+		// 디버깅용 로그 출력
+		// console.log('[[ getParticipantState ]]', currentMembers);
 		console.log("-------------------------------------------");
 
+		// currentMembers가 없을 경우 잘못된 회의 ID로 간주하고 에러 반환
 		if (!currentMembers) {
 			return res.status(400).send("invalid meeting role");
 		}
 
+		// 조회된 currentMembers 데이터를 클라이언트에 반환
 		return res.status(200).send(currentMembers);
 	} catch (err) {
+		// 오류 발생 시 상태 코드 500과 메시지를 반환
 		return res.status(500).send({
 			message: "get a meeting role had an error",
 		});
