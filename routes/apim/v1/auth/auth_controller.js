@@ -1,115 +1,105 @@
-const jwt = require('jsonwebtoken');
-const member = require('../../../../models/member_schema');
-
-
+const jwt = require("jsonwebtoken");
+const member = require("../../../../models/member_schema");
 
 /*-------------------------------------------------
     Sign In
 -------------------------------------------------*/
 exports.signIn = async (req, res) => {
-    console.log(`
+	console.log(`
 --------------------------------------------------  
   API  : SignIn
   router.post('signIn', authController.signIn) 
 --------------------------------------------------`);
 
+	try {
+		const criteria = {
+			email: req.body.email,
+		};
 
-    try {
+		const user = await member.findOne(criteria);
 
-        const criteria = {
-            email: req.body.email
-        }
+		if (!user) {
+			console.log("No Matched Account");
+			return res.status(404).json({
+				message: "not found",
+			});
+		}
 
-        const user = await member.findOne(criteria);
+		if (user && user.retired == true) {
+			return res.status(400).send({
+				message: `retired`,
+			});
+		}
 
-        if (!user) {
-            // console.log('No Matched Account');
-            return res.status(404).json({
-                message: 'not found'
-            });
-        }
+		const isMatched = await user.comparePassword(req.body.password, user.password);
 
-        if (user && user.retired == true) {
-            return res.status(400).send({
-                message: `retired`
-            });
-        }
+		if (!isMatched) {
+			// console.log('Password Mismatch');
+			return res.status(404).send({
+				message: "mismatch",
+			});
+		}
 
-        const isMatched = await user.comparePassword(req.body.password, user.password);
+		const payload = {
+			_id: user._id,
+			name: user.name,
+		};
 
-        if (!isMatched) {
-            // console.log('Password Mismatch');
-            return res.status(404).send({
-                message: 'mismatch'
-            });
-        }
+		const jwtOption = {
+			expiresIn: "1d",
+		};
 
-        const payload = {
-            _id: user._id,
-            name: user.name
-        };
+		const token = jwt.sign(payload, process.env.JWT_SECRET, jwtOption);
 
-        const jwtOption = {
-            expiresIn: '1d'
-        };
+		const projection = {
+			password: false,
+			createdAt: false,
+			updatedAt: false,
+		};
 
-        const token = jwt.sign(payload, process.env.JWT_SECRET, jwtOption);
-
-        const projection = {
-            password: false,
-            createdAt: false,
-            updatedAt: false
-        }
-
-        /*------------------------------------------
+		/*------------------------------------------
             5. send token and profile info to client
         --------------------------------------------*/
-        res.send({
-            token
-        });
-
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send('An error has occurred in the server');
-    }
+		res.send({
+			token,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.status(500).send("An error has occurred in the server");
+	}
 };
 
-
-
 exports.getUserInfo = async (req, res) => {
-    console.log(`
+	console.log(`
     --------------------------------------------------
       User : 
       API  : Get my UserData
       router.get(/getUserData', meetingContollder.getUserData);
     --------------------------------------------------`);
 
-    const dbModels = global.DB_MODELS;
+	const dbModels = global.DB_MODELS;
 
-    const criteria = {
-        _id: req.params.userId,
-    }
+	const criteria = {
+		_id: req.params.userId,
+	};
 
+	try {
+		const userData = await dbModels.Member.findOne(criteria);
+		// console.log('[[ getuserData ]]', userData)
+		console.log("-------------------------------------------");
 
-    try {
-        const userData = await dbModels.Member.findOne(criteria);
-        // console.log('[[ getuserData ]]', userData)
-        console.log('-------------------------------------------')
+		if (!userData) {
+			// console.log('No Matched Account');
+			return res.status(404).send({
+				message: "not found",
+			});
+		}
 
-
-        if (!userData) {
-            // console.log('No Matched Account');
-            return res.status(404).send({
-                message: 'not found'
-            });
-        }
-
-        return res.send({
-            userData: userData
-        });
-    } catch (err) {
-        console.log('[ ERROR ]', err);
-        res.status(500).send('getuserData Error')
-    }
-}
+		return res.send({
+			userData: userData,
+		});
+	} catch (err) {
+		console.log("[ ERROR ]", err);
+		res.status(500).send("getuserData Error");
+	}
+};
