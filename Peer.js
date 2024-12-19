@@ -186,7 +186,7 @@ module.exports = class Peer {
 			encodings:
 				kind === "video"
 					? [
-							{ maxBitrate: 200000, scaleResolutionDownBy: 4, maxFramerate: 15 }, // 저품질
+							{ maxBitrate: 100000, scaleResolutionDownBy: 4, maxFramerate: 15 }, // 저품질
 							{ maxBitrate: 300000, scaleResolutionDownBy: 2, maxFramerate: 30 }, // 중품질
 							{ maxBitrate: 900000, scaleResolutionDownBy: 1, maxFramerate: 30 }, // 고품질
 					  ]
@@ -198,7 +198,7 @@ module.exports = class Peer {
 		// CPU 사용량 모니터링 추가
 		producer.on("score", (score) => {
 			console.log(score);
-			if (score < 5) {
+			if (score < 7) {
 				// 성능 점수가 낮을 때
 				this.adjustProducerQuality(producer);
 			}
