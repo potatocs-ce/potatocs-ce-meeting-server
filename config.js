@@ -52,7 +52,7 @@ module.exports = {
 				{
 					kind: "audio",
 					mimeType: "audio/opus",
-					clockRate: 48000,
+					clockRate: 96000,
 					channels: 2,
 				},
 				{
@@ -88,8 +88,7 @@ module.exports = {
 			initialAvailableOutgoingBitrate: 800000, // 초기 가용 비트레이트
 			minimumAvailableOutgoingBitrate: 300000, // 최소 비트레이트
 			maxIncomingBitrate: 1500000, // 최대 수신 비트레이트
-			// maxOutgoingBitrate: 1000000, // 최대 송신 비트레이트
-			maxOutgoingBitrate: 500000, // 최대 송신 비트레이트
+			maxOutgoingBitrate: 1000000, // 최대 송신 비트레이트
 		},
 	},
 };
