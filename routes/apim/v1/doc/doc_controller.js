@@ -139,7 +139,7 @@ exports.getDocDrawingList = async (req, res) => {
 	try {
 		// Aggregation 실행: 드로잉 데이터를 그룹화하여 가져옴
 		const result = await dbModels.DocDrawing.aggregate(pipeline);
-
+		console.log(result);
 		// 결과를 클라이언트에 반환 (상태 코드 200)
 		return res.status(200).send(result);
 	} catch (err) {
