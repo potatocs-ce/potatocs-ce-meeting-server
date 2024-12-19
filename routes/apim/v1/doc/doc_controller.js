@@ -32,7 +32,6 @@ exports.createDoc = async (req, res) => {
 		// 데이터베이스에서 meetingId에 해당하는 회의 정보 조회
 		const result = await dbModels.Meeting.findOne({ _id: meetingId });
 
-		console.log(result);
 		// 회의 정보가 없는 경우 잘못된 요청으로 간주하고 상태 코드 400 반환
 		if (!result) {
 			return res.status(400).send("invalid meeting id");
@@ -47,7 +46,7 @@ exports.createDoc = async (req, res) => {
 			saveKey: file.key, // 파일 저장 경로 또는 키
 			fileSize: file.size, // 파일 크기 (바이트)
 		};
-		console.log(criteria);
+
 		// 문서 데이터를 데이터베이스에 저장
 		const doc = await new dbModels.Doc(criteria).save();
 
