@@ -40,8 +40,8 @@ exports.addSurvey = async (req, res) => {
   router.post('/survey/add', surveyController.addSurvey);
 --------------------------------------------------
     `);
-	// 로그인한 사용자의 id
-	const { _id } = req.decoded;
+
+	const { _id } = req.decoded; // 로그인한 사용자의 id
 	const userId = req.decoded._id; // 조회를 시도한 유저의 아이디
 
 	const dbModels = global.DB_MODELS;
