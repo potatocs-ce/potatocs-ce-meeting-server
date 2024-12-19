@@ -102,6 +102,7 @@ exports.deleteSurvey = async (req, res) => {
  * @returns
  */
 exports.editSurvey = async (req, res) => {
+	// API 호출 정보를 콘솔에 출력
 	console.log(`
 --------------------------------------------------
   User : 
@@ -109,25 +110,39 @@ exports.editSurvey = async (req, res) => {
   router.post('/survey/edit/:_id', surveyController.editSurvey);
 --------------------------------------------------
     `);
+
+	// 글로벌 DB 모델 객체 가져오기
 	const dbModels = global.DB_MODELS;
+
+	// URL 파라미터에서 설문 ID 가져오기
 	const _id = req.params._id;
+
+	// 요청 바디에서 설문 정보를 추출
 	const { title, description, cards } = req.body;
 
+	// 디버깅용으로 제목 로그 출력
 	console.log(title);
+
 	try {
+		// 데이터베이스에서 해당 설문 ID에 해당하는 문서를 업데이트
 		await dbModels.Survey.updateOne(
-			{ _id },
+			{ _id }, // 업데이트 조건: 설문 ID가 일치하는 문서
 			{
 				$set: {
-					title,
-					description,
-					cards,
+					title, // 새로운 제목
+					description, // 새로운 설명
+					cards, // 새로운 카드 데이터
 				},
 			}
 		);
+
+		// 업데이트 성공 시 상태 코드 200과 성공 상태를 반환
 		return res.status(200).json({ status: true });
 	} catch (err) {
+		// 오류 발생 시 오류 로그 출력
 		console.log("[ ERROR ]", err);
+
+		// 상태 코드 500과 에러 메시지를 반환
 		return res.status(500).send({
 			status: false,
 			message: "An error occured while getting survey",
