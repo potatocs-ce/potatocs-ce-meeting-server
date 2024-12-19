@@ -186,7 +186,7 @@ module.exports = class Peer {
 			encodings:
 				kind === "video"
 					? [
-							{ maxBitrate: 100000, scaleResolutionDownBy: 4, maxFramerate: 15 }, // 저품질
+							{ maxBitrate: 200000, scaleResolutionDownBy: 4, maxFramerate: 15 }, // 저품질
 							{ maxBitrate: 300000, scaleResolutionDownBy: 2, maxFramerate: 30 }, // 중품질
 							{ maxBitrate: 900000, scaleResolutionDownBy: 1, maxFramerate: 30 }, // 고품질
 					  ]
