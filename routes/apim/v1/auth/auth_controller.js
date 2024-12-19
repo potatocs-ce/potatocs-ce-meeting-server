@@ -76,9 +76,7 @@ exports.getUserInfo = async (req, res) => {
       API  : Get my UserData
       router.get(/getUserData', meetingContollder.getUserData);
     ---------------------------------------------------`);
-
 	const dbModels = global.DB_MODELS;
-
 	const criteria = {
 		_id: req.params.userId,
 	};
