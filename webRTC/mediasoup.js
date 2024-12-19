@@ -69,14 +69,13 @@ function handleWorkerOverload(worker) {
 			peer.producers.forEach((producer) => {
 				if (producer.kind === "video") {
 					producer.pause();
-					setTimeout(() => producer.resume(), 5000); // 5초 후 재시도
+					setTimeout(() => producer.resume(), 3000); // 5초 후 재시도
 				}
 			});
 		});
 	});
 }
 module.exports = function (io, socket, app) {
-	console.log(io, socket);
 	socket.on("createRoom", async ({ room_id }, callback) => {
 		if (roomList.has(room_id)) {
 			callback("already exists");
