@@ -30,7 +30,7 @@ module.exports = {
 			rtcMinPort: 40000,
 			rtcMaxPort: 49999,
 			// Worker 당 최대 처리량 설정
-			maxWorkerLoad: 80, // 70% CPU 사용률 제한
+			maxWorkerLoad: 70, // 70% CPU 사용률 제한
 			logLevel: "warn",
 			logTags: [
 				"info",
