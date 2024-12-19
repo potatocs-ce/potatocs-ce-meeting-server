@@ -198,7 +198,7 @@ module.exports = class Peer {
 		// CPU 사용량 모니터링 추가
 		producer.on("score", (score) => {
 			console.log(score);
-			if (score < 7) {
+			if (score < 5) {
 				// 성능 점수가 낮을 때
 				this.adjustProducerQuality(producer);
 			}
@@ -240,7 +240,7 @@ module.exports = class Peer {
 		// simulcast: 네트워크 상황에 따라 다양한 해상도와 프레임률의 스트림을 제공하기 위함
 		if (consumer.type === "simulcast") {
 			await consumer.setPreferredLayers({
-				spatialLayer: 2,
+				spatialLayer: 3,
 				temporalLayer: 0,
 			});
 		}
