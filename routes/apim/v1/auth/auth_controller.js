@@ -75,7 +75,7 @@ exports.getUserInfo = async (req, res) => {
       User : 
       API  : Get my UserData
       router.get(/getUserData', meetingContollder.getUserData);
-    --------------------------------------------------`);
+    ---------------------------------------------------`);
 
 	const dbModels = global.DB_MODELS;
 
