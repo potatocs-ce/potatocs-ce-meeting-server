@@ -76,6 +76,7 @@ function handleWorkerOverload(worker) {
 	});
 }
 module.exports = function (io, socket, app) {
+	console.log(io, socket);
 	socket.on("createRoom", async ({ room_id }, callback) => {
 		if (roomList.has(room_id)) {
 			callback("already exists");
