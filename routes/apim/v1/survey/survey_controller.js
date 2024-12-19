@@ -113,6 +113,7 @@ exports.editSurvey = async (req, res) => {
 	const _id = req.params._id;
 	const { title, description, cards } = req.body;
 
+	console.log(title);
 	try {
 		await dbModels.Survey.updateOne(
 			{ _id },
