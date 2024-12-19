@@ -125,16 +125,6 @@ exports.editSurvey = async (req, res) => {
 				},
 			}
 		);
-		await dbModels.Survey.update(
-			{ _id },
-			{
-				$set: {
-					title,
-					description,
-					cards,
-				},
-			}
-		);
 		return res.status(200).json({ status: true });
 	} catch (err) {
 		console.log("[ ERROR ]", err);
