@@ -140,7 +140,7 @@ exports.editSurvey = async (req, res) => {
 		return res.status(200).json({ status: true });
 	} catch (err) {
 		// 오류 발생 시 오류 로그 출력
-		console.log("error : ", err);
+		console.log("[ ERROR ]", err);
 
 		// 상태 코드 500과 에러 메시지를 반환
 		return res.status(500).send({
@@ -218,6 +218,7 @@ exports.getSurveys = async (req, res) => {
  * @param {*} res
  */
 exports.getSurvey = async (req, res) => {
+	// API 호출 정보를 콘솔에 출력
 	console.log(`
     --------------------------------------------------
       User : 
@@ -226,16 +227,25 @@ exports.getSurvey = async (req, res) => {
     --------------------------------------------------
         `);
 
+	// 글로벌 DB 모델 객체 가져오기
 	const dbModels = global.DB_MODELS;
+
+	// URL 파라미터에서 설문 ID 가져오기
 	const _id = req.params._id;
+
 	try {
+		// 데이터베이스에서 설문 ID(_id)에 해당하는 설문 정보를 조회
 		const survey = await dbModels.Survey.findOne({ _id });
 
+		// 조회된 설문 데이터를 상태 코드 200과 함께 클라이언트에 반환
 		res.status(200).json(survey);
 	} catch (err) {
+		// 오류 발생 시 오류 로그 출력
 		console.log("[ ERROR ]", err);
+
+		// 상태 코드 500과 에러 메시지를 반환
 		res.status(500).send({
-			message: "An error occured while getting survey",
+			message: "An error occured while getting survey", // 에러 메시지
 		});
 	}
 };
