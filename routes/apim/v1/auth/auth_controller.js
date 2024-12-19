@@ -30,11 +30,9 @@ exports.signIn = async (req, res) => {
 				message: `retired`,
 			});
 		}
-
 		const isMatched = await user.comparePassword(req.body.password, user.password);
-
 		if (!isMatched) {
-			// console.log('Password Mismatch');
+			console.log("Password Mismatch");
 			return res.status(404).send({
 				message: "mismatch",
 			});
