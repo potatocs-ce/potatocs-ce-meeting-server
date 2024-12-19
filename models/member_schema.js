@@ -67,16 +67,23 @@ const member_Schema = mongoose.Schema(
 		timestamps: true,
 	}
 );
-
+// member_Schema가 저장되기 전에(pre 'save' 이벤트) 실행되는 미들웨어 정의
 member_Schema.pre("save", function (next) {
+	// 현재 사용자 객체를 user 변수에 할당
 	var user = this;
 
+	// bcrypt를 사용하여 솔트(salt)를 생성 (작업 비용(cost factor) 10)
 	bcrypt.genSalt(10, function (err, salt) {
+		// 에러 발생 시 다음 미들웨어로 에러 전달
 		if (err) return next(err);
 
+		// 생성된 솔트를 사용하여 사용자 비밀번호를 해시 처리
 		bcrypt.hash(user.password, salt, function (err, hash) {
+			// 에러 발생 시 다음 미들웨어로 에러 전달
 			if (err) return next(err);
+			// 해시된 비밀번호를 사용자 객체에 저장
 			user.password = hash;
+			// 다음 미들웨어로 이동하여 저장 프로세스 계속 진행
 			next();
 		});
 	});
