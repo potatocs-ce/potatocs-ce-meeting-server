@@ -14,7 +14,6 @@ exports.isAuthenticated = (req, res, next) => {
 	const bearer = token.split(" ");
 	const bearerToken = bearer[1];
 
-	console.log(bearer);
 	verifyToken(bearerToken)
 		.then((decoded) => {
 			req.decoded = decoded;
