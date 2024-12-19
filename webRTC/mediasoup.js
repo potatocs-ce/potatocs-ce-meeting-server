@@ -160,7 +160,6 @@ module.exports = function (io, socket, app) {
 
 	// 연결 생성
 	socket.on("createWebRtcTransport", async (_, callback) => {
-		console.log(createWorkers);
 		console.log("Create webrtc transport", {
 			name: `${roomList.get(socket.room_id).getPeers().get(socket.id).name}`,
 		});
