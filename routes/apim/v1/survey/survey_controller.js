@@ -140,7 +140,7 @@ exports.editSurvey = async (req, res) => {
 		return res.status(200).json({ status: true });
 	} catch (err) {
 		// 오류 발생 시 오류 로그 출력
-		console.log("[ ERROR ]", err);
+		console.log("error : ", err);
 
 		// 상태 코드 500과 에러 메시지를 반환
 		return res.status(500).send({
